@@ -1,11 +1,52 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/geist';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* 단청 메인 컬러 — 석간주 */
+  --danch-seokganju-100: #c69d97;
+  --danch-seokganju-300: #a96b62;
+  --danch-seokganju-500: #8c3a2e;
+  --danch-seokganju-700: #692c23;
+  --danch-seokganju-900: #461d17;
+
+  /* 단청 메인 컬러 — 군청 */
+  --danch-guncheong-100: #97a5bd;
+  --danch-guncheong-300: #62779c;
+  --danch-guncheong-500: #2e4a7b;
+  --danch-guncheong-700: #23385c;
+  --danch-guncheong-900: #17253e;
+
+  /* 단청 메인 컬러 — 양록 */
+  --danch-yangrok-100: #9eb5a5;
+  --danch-yangrok-300: #6e9077;
+  --danch-yangrok-500: #3d6b4a;
+  --danch-yangrok-700: #2e5038;
+  --danch-yangrok-900: #1f3625;
+
+  /* 단청 메인 컬러 — 포도 */
+  --danch-podo-100: #aa9eb5;
+  --danch-podo-300: #806e90;
+  --danch-podo-500: #553d6b;
+  --danch-podo-700: #402e50;
+  --danch-podo-900: #2b1f36;
+
+  /* 단청 텍스트 — 먹색 그라디언트 */
+  --danch-ink-primary: #1f1a1a;
+  --danch-ink-body: #3d3535;
+  --danch-ink-secondary: #6b6363;
+  --danch-ink-tertiary: #948c8c;
+  --danch-ink-disabled: #bfb8b8;
+
+  /* 단청 보더 / 서피스 */
+  --danch-stroke-strong: #c9c5bf;
+  --danch-stroke-default: #dedad4;
+  --danch-stroke-divider: #edeae4;
+  --danch-surface-muted: #f6f3ee;
+
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -94,7 +135,7 @@
 
   --sidebar-border: oklch(0.922 0 0);
 
-  --sidebar-ring: oklch(0.708 0 0)
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -117,67 +158,45 @@
   }
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
 @theme inline {
+  /* 단청 메인 컬러 */
+  --color-seokganju-100: var(--danch-seokganju-100);
+  --color-seokganju-300: var(--danch-seokganju-300);
+  --color-seokganju-500: var(--danch-seokganju-500);
+  --color-seokganju-700: var(--danch-seokganju-700);
+  --color-seokganju-900: var(--danch-seokganju-900);
+
+  --color-guncheong-100: var(--danch-guncheong-100);
+  --color-guncheong-300: var(--danch-guncheong-300);
+  --color-guncheong-500: var(--danch-guncheong-500);
+  --color-guncheong-700: var(--danch-guncheong-700);
+  --color-guncheong-900: var(--danch-guncheong-900);
+
+  --color-yangrok-100: var(--danch-yangrok-100);
+  --color-yangrok-300: var(--danch-yangrok-300);
+  --color-yangrok-500: var(--danch-yangrok-500);
+  --color-yangrok-700: var(--danch-yangrok-700);
+  --color-yangrok-900: var(--danch-yangrok-900);
+
+  --color-podo-100: var(--danch-podo-100);
+  --color-podo-300: var(--danch-podo-300);
+  --color-podo-500: var(--danch-podo-500);
+  --color-podo-700: var(--danch-podo-700);
+  --color-podo-900: var(--danch-podo-900);
+
+  /* 단청 텍스트 */
+  --color-ink-primary: var(--danch-ink-primary);
+  --color-ink-body: var(--danch-ink-body);
+  --color-ink-secondary: var(--danch-ink-secondary);
+  --color-ink-tertiary: var(--danch-ink-tertiary);
+  --color-ink-disabled: var(--danch-ink-disabled);
+
+  /* 단청 보더 / 서피스 */
+  --color-stroke-strong: var(--danch-stroke-strong);
+  --color-stroke-default: var(--danch-stroke-default);
+  --color-stroke-divider: var(--danch-stroke-divider);
+  --color-surface-muted: var(--danch-surface-muted);
+
   --font-heading: var(--font-sans);
   --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -256,8 +275,12 @@ code {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;}
+    @apply border-border outline-ring/50;
+  }
   body {
-    @apply bg-background text-foreground;}
+    @apply bg-background text-foreground;
+  }
   html {
-    @apply font-sans;}}
+    @apply font-sans;
+  }
+}
