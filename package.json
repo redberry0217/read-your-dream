@@ -2,13 +2,14 @@
   "name": "read-your-dream",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*"
-  ],
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "dev:client": "npm run dev -w client",
-    "dev:server": "npm run dev -w server",
-    "build:client": "npm run build -w client",
-    "build:server": "npm run build -w server"
+    "dev:client": "pnpm --filter client dev",
+    "dev:server": "pnpm --filter server dev",
+    "build:client": "pnpm --filter client build",
+    "build:server": "pnpm --filter server build"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
   }
 }
