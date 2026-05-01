@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      String   @id @default(cuid())
+  email   String   @unique
+  jewels  Int      @default(0)
+  status  UserStatus?
+  logs    DreamLog[]
+}
+
+model DreamLog {
+  id        String   @id @default(cuid())
+  content   String
+  emotions  Json
+  type      String   // "FREE" or "PREMIUM"
+  tarotCards String? // Comma separated or JSON string
+  summary    String?
+  analysis   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model UserStatus {
+  id          String @id @default(cuid())
+  recentWorry String?
+  feeling     String?
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String @unique
+}
