@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>단청 영감 보라 팔레트</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
+        color: #1a1a1a;
+        background: #f6f3ee;
+      }
+      body { margin: 0; padding: 48px 32px; }
+      h1 { font-size: 22px; margin: 0 0 8px; letter-spacing: -0.01em; }
+      .sub { color: #666; font-size: 14px; margin: 0 0 32px; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .swatch {
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+      }
+      .chip {
+        height: 160px;
+        display: flex;
+        align-items: flex-end;
+        padding: 14px 16px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+      .meta { padding: 14px 16px 16px; }
+      .name { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+      .codes { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: #555; line-height: 1.6; }
+      .desc { font-size: 12px; color: #777; margin-top: 8px; line-height: 1.5; }
+
+      h2 { font-size: 16px; margin: 48px 0 16px; }
+      .combo-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+        align-items: stretch;
+      }
+      .combo-card {
+        flex: 1;
+        padding: 24px;
+        border-radius: 12px;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .combo-label { font-size: 12px; opacity: 0.7; }
+      .combo-title { font-size: 18px; font-weight: 600; margin-top: 8px; }
+      .accent-pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        margin-top: 12px;
+        align-self: flex-start;
+      }
+
+      .main-section {
+        background: #fff;
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 48px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+      }
+      .main-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+      .main-swatch { display: flex; flex-direction: column; }
+      .main-chip {
+        height: 200px;
+        border-radius: 12px;
+        display: flex;
+        align-items: flex-end;
+        padding: 18px 20px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .main-meta { padding: 14px 4px 0; }
+      .main-name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+      .main-codes { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: #555; }
+
+      @media (max-width: 720px) {
+        .main-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+
+      .variant-section {
+        background: #fff;
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 48px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+      }
+      .variant-tier-header {
+        display: grid;
+        grid-template-columns: 110px repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 8px;
+        padding: 0 4px;
+      }
+      .tier-label {
+        font-size: 11px;
+        color: #888;
+        text-align: center;
+        font-weight: 500;
+      }
+      .variant-row {
+        display: grid;
+        grid-template-columns: 110px repeat(5, 1fr);
+        gap: 12px;
+        align-items: stretch;
+        margin-bottom: 16px;
+      }
+      .variant-row-label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 15px;
+        padding-right: 8px;
+      }
+      .variant-row-label small { font-size: 11px; color: #888; font-weight: 400; margin-top: 2px; }
+      .variant-cell {
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fafafa;
+        position: relative;
+        outline: none;
+      }
+      .variant-cell.is-base {
+        outline: 2px solid #1a1a1a;
+        outline-offset: 2px;
+      }
+      .variant-chip {
+        height: 88px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 8px 10px;
+        font-size: 11px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .variant-info {
+        padding: 8px 10px 10px;
+        background: #fff;
+      }
+      .variant-codes {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #555;
+        font-size: 10.5px;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 900px) {
+        .variant-tier-header,
+        .variant-row {
+          grid-template-columns: 90px repeat(5, 1fr);
+        }
+      }
+
+      .neutrals-section {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 24px;
+        margin-bottom: 48px;
+      }
+      @media (max-width: 900px) {
+        .neutrals-section { grid-template-columns: 1fr; }
+      }
+      .neutrals-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 28px 32px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+      }
+      .neutrals-card h3 { font-size: 16px; margin: 0 0 4px; }
+      .neutrals-card .sub { margin: 0 0 20px; }
+
+      .text-row {
+        display: grid;
+        grid-template-columns: 24px 1fr 180px;
+        gap: 14px;
+        align-items: center;
+        padding: 12px 0;
+        border-top: 1px solid #EDEAE4;
+      }
+      .text-row:first-of-type { border-top: 0; }
+      .text-swatch-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+      }
+      .text-sample {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .text-sample-tier { font-size: 12px; font-weight: 600; }
+      .text-sample-line { font-size: 15px; line-height: 1.5; }
+      .text-meta-codes {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+        color: #777;
+        text-align: right;
+      }
+      .text-usage { font-size: 11px; color: #999; text-align: right; margin-top: 2px; }
+
+      .divider-row {
+        padding: 14px 0 18px;
+        border-top: 1px dashed #EDEAE4;
+      }
+      .divider-row:first-of-type { border-top: 0; padding-top: 0; }
+      .divider-row-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+      .divider-name { font-size: 13px; font-weight: 600; }
+      .divider-codes { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #777; }
+      .divider-line {
+        height: 1px;
+        width: 100%;
+      }
+      .divider-usage { font-size: 11px; color: #999; margin-top: 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>단청 영감 보라 메인 컬러 후보</h1>
+    <p class="sub">채도 낮춘 6종 — 형광기 없이 깊이감 위주</p>
+
+    <section class="main-section">
+      <h2 style="margin:0 0 4px; font-size:18px">선정 메인 컬러 4종</h2>
+      <p class="sub" style="margin:0 0 24px">석간주 · 군청 · 양록 · 포도</p>
+      <div class="main-grid">
+        <div class="main-swatch">
+          <div class="main-chip" style="background:#8C3A2E">#8C3A2E</div>
+          <div class="main-meta">
+            <div class="main-name">석간주 (石間朱)</div>
+            <div class="main-codes">RGB 140, 58, 46</div>
+          </div>
+        </div>
+        <div class="main-swatch">
+          <div class="main-chip" style="background:#2E4A7B">#2E4A7B</div>
+          <div class="main-meta">
+            <div class="main-name">군청 (群靑)</div>
+            <div class="main-codes">RGB 46, 74, 123</div>
+          </div>
+        </div>
+        <div class="main-swatch">
+          <div class="main-chip" style="background:#3D6B4A">#3D6B4A</div>
+          <div class="main-meta">
+            <div class="main-name">양록 (洋綠)</div>
+            <div class="main-codes">RGB 61, 107, 74</div>
+          </div>
+        </div>
+        <div class="main-swatch">
+          <div class="main-chip" style="background:#553D6B">#553D6B</div>
+          <div class="main-meta">
+            <div class="main-name">포도 (葡萄)</div>
+            <div class="main-codes">RGB 85, 61, 107</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="variant-section">
+      <h2 style="margin:0 0 4px; font-size:18px">메인 컬러 4종 — Variant</h2>
+      <p class="sub" style="margin:0 0 24px">각 색상별 ±2단계, 베이스(테두리 강조) 기준 ±25% / ±50% 명도 변환</p>
+
+      <div class="variant-tier-header">
+        <div></div>
+        <div class="tier-label">2단계 연한</div>
+        <div class="tier-label">1단계 연한</div>
+        <div class="tier-label">선정 (Base)</div>
+        <div class="tier-label">1단계 진한</div>
+        <div class="tier-label">2단계 진한</div>
+      </div>
+
+      <!-- 석간주 -->
+      <div class="variant-row">
+        <div class="variant-row-label">석간주<small>石間朱</small></div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#C69D97; color:#1a1a1a">#C69D97</div>
+          <div class="variant-info"><div class="variant-codes">RGB 198, 157, 151</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#A96B62; color:#fff">#A96B62</div>
+          <div class="variant-info"><div class="variant-codes">RGB 169, 107, 98</div></div>
+        </div>
+        <div class="variant-cell is-base">
+          <div class="variant-chip" style="background:#8C3A2E; color:#fff">#8C3A2E</div>
+          <div class="variant-info"><div class="variant-codes">RGB 140, 58, 46</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#692C23; color:#fff">#692C23</div>
+          <div class="variant-info"><div class="variant-codes">RGB 105, 44, 35</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#461D17; color:#fff">#461D17</div>
+          <div class="variant-info"><div class="variant-codes">RGB 70, 29, 23</div></div>
+        </div>
+      </div>
+
+      <!-- 군청 -->
+      <div class="variant-row">
+        <div class="variant-row-label">군청<small>群靑</small></div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#97A5BD; color:#1a1a1a">#97A5BD</div>
+          <div class="variant-info"><div class="variant-codes">RGB 151, 165, 189</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#62779C; color:#fff">#62779C</div>
+          <div class="variant-info"><div class="variant-codes">RGB 98, 119, 156</div></div>
+        </div>
+        <div class="variant-cell is-base">
+          <div class="variant-chip" style="background:#2E4A7B; color:#fff">#2E4A7B</div>
+          <div class="variant-info"><div class="variant-codes">RGB 46, 74, 123</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#23385C; color:#fff">#23385C</div>
+          <div class="variant-info"><div class="variant-codes">RGB 35, 56, 92</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#17253E; color:#fff">#17253E</div>
+          <div class="variant-info"><div class="variant-codes">RGB 23, 37, 62</div></div>
+        </div>
+      </div>
+
+      <!-- 양록 -->
+      <div class="variant-row">
+        <div class="variant-row-label">양록<small>洋綠</small></div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#9EB5A5; color:#1a1a1a">#9EB5A5</div>
+          <div class="variant-info"><div class="variant-codes">RGB 158, 181, 165</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#6E9077; color:#fff">#6E9077</div>
+          <div class="variant-info"><div class="variant-codes">RGB 110, 144, 119</div></div>
+        </div>
+        <div class="variant-cell is-base">
+          <div class="variant-chip" style="background:#3D6B4A; color:#fff">#3D6B4A</div>
+          <div class="variant-info"><div class="variant-codes">RGB 61, 107, 74</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#2E5038; color:#fff">#2E5038</div>
+          <div class="variant-info"><div class="variant-codes">RGB 46, 80, 56</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#1F3625; color:#fff">#1F3625</div>
+          <div class="variant-info"><div class="variant-codes">RGB 31, 54, 37</div></div>
+        </div>
+      </div>
+
+      <!-- 포도 -->
+      <div class="variant-row">
+        <div class="variant-row-label">포도<small>葡萄</small></div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#AA9EB5; color:#1a1a1a">#AA9EB5</div>
+          <div class="variant-info"><div class="variant-codes">RGB 170, 158, 181</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#806E90; color:#fff">#806E90</div>
+          <div class="variant-info"><div class="variant-codes">RGB 128, 110, 144</div></div>
+        </div>
+        <div class="variant-cell is-base">
+          <div class="variant-chip" style="background:#553D6B; color:#fff">#553D6B</div>
+          <div class="variant-info"><div class="variant-codes">RGB 85, 61, 107</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#402E50; color:#fff">#402E50</div>
+          <div class="variant-info"><div class="variant-codes">RGB 64, 46, 80</div></div>
+        </div>
+        <div class="variant-cell">
+          <div class="variant-chip" style="background:#2B1F36; color:#fff">#2B1F36</div>
+          <div class="variant-info"><div class="variant-codes">RGB 43, 31, 54</div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="neutrals-section">
+      <div class="neutrals-card">
+        <h3>텍스트 컬러 — 먹색 그라디언트</h3>
+        <p class="sub">순흑 대신 살짝 따뜻한 먹빛. 5단계 위계</p>
+
+        <div class="text-row">
+          <div class="text-swatch-dot" style="background:#1F1A1A"></div>
+          <div class="text-sample">
+            <div class="text-sample-tier" style="color:#1F1A1A">Primary</div>
+            <div class="text-sample-line" style="color:#1F1A1A">한글 본문 샘플 The quick brown fox</div>
+          </div>
+          <div>
+            <div class="text-meta-codes">#1F1A1A · 31, 26, 26</div>
+            <div class="text-usage">헤딩 · 강조 텍스트</div>
+          </div>
+        </div>
+
+        <div class="text-row">
+          <div class="text-swatch-dot" style="background:#3D3535"></div>
+          <div class="text-sample">
+            <div class="text-sample-tier" style="color:#3D3535">Body</div>
+            <div class="text-sample-line" style="color:#3D3535">한글 본문 샘플 The quick brown fox</div>
+          </div>
+          <div>
+            <div class="text-meta-codes">#3D3535 · 61, 53, 53</div>
+            <div class="text-usage">본문 기본</div>
+          </div>
+        </div>
+
+        <div class="text-row">
+          <div class="text-swatch-dot" style="background:#6B6363"></div>
+          <div class="text-sample">
+            <div class="text-sample-tier" style="color:#6B6363">Secondary</div>
+            <div class="text-sample-line" style="color:#6B6363">한글 본문 샘플 The quick brown fox</div>
+          </div>
+          <div>
+            <div class="text-meta-codes">#6B6363 · 107, 99, 99</div>
+            <div class="text-usage">보조 · 메타 정보</div>
+          </div>
+        </div>
+
+        <div class="text-row">
+          <div class="text-swatch-dot" style="background:#948C8C"></div>
+          <div class="text-sample">
+            <div class="text-sample-tier" style="color:#948C8C">Tertiary</div>
+            <div class="text-sample-line" style="color:#948C8C">한글 본문 샘플 The quick brown fox</div>
+          </div>
+          <div>
+            <div class="text-meta-codes">#948C8C · 148, 140, 140</div>
+            <div class="text-usage">캡션 · 힌트</div>
+          </div>
+        </div>
+
+        <div class="text-row">
+          <div class="text-swatch-dot" style="background:#BFB8B8"></div>
+          <div class="text-sample">
+            <div class="text-sample-tier" style="color:#BFB8B8">Disabled</div>
+            <div class="text-sample-line" style="color:#BFB8B8">한글 본문 샘플 The quick brown fox</div>
+          </div>
+          <div>
+            <div class="text-meta-codes">#BFB8B8 · 191, 184, 184</div>
+            <div class="text-usage">비활성 · placeholder</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="neutrals-card">
+        <h3>디바이더 / 보더 — 따뜻한 회색</h3>
+        <p class="sub">호분 베이스에 어울리는 톤</p>
+
+        <div class="divider-row">
+          <div class="divider-row-head">
+            <div class="divider-name">Border Strong</div>
+            <div class="divider-codes">#C9C5BF · 201, 197, 191</div>
+          </div>
+          <div class="divider-line" style="background:#C9C5BF"></div>
+          <div class="divider-usage">강한 구분선 · 활성 보더</div>
+        </div>
+
+        <div class="divider-row">
+          <div class="divider-row-head">
+            <div class="divider-name">Border Default</div>
+            <div class="divider-codes">#DEDAD4 · 222, 218, 212</div>
+          </div>
+          <div class="divider-line" style="background:#DEDAD4"></div>
+          <div class="divider-usage">기본 보더 · 카드 외곽</div>
+        </div>
+
+        <div class="divider-row">
+          <div class="divider-row-head">
+            <div class="divider-name">Divider</div>
+            <div class="divider-codes">#EDEAE4 · 237, 234, 228</div>
+          </div>
+          <div class="divider-line" style="background:#EDEAE4"></div>
+          <div class="divider-usage">리스트 구분선 · 약한 보더</div>
+        </div>
+
+        <div class="divider-row">
+          <div class="divider-row-head">
+            <div class="divider-name">Surface Muted</div>
+            <div class="divider-codes">#F6F3EE · 246, 243, 238</div>
+          </div>
+          <div class="divider-line" style="background:#F6F3EE; height:24px; border-radius:4px"></div>
+          <div class="divider-usage">카드 배경 · 섹션 구분 (현재 body 색)</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:0">전체 후보</h2>
+
+    <div class="grid">
+      <div class="swatch">
+        <div class="chip" style="background:#3D3470">#3D3470</div>
+        <div class="meta">
+          <div class="name">1. 자청 (紫靑)</div>
+          <div class="codes">RGB 61, 52, 112<br />HEX #3D3470</div>
+          <div class="desc">군청 + 자색. 깊은 블루-바이올렛. 차분·신비</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#553D6B">#553D6B</div>
+        <div class="meta">
+          <div class="name">2. 포도 (葡萄)</div>
+          <div class="codes">RGB 85, 61, 107<br />HEX #553D6B</div>
+          <div class="desc">잘 익은 포도빛. 채도 낮고 묵직</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#7B3F5F">#7B3F5F</div>
+        <div class="meta">
+          <div class="name">3. 자주 (紫朱)</div>
+          <div class="codes">RGB 123, 63, 95<br />HEX #7B3F5F</div>
+          <div class="desc">단청 적색과 자색의 중간. 전통·고급</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#6B4F73">#6B4F73</div>
+        <div class="meta">
+          <div class="name">4. 흙보라</div>
+          <div class="codes">RGB 107, 79, 115<br />HEX #6B4F73</div>
+          <div class="desc">석간주의 흙빛이 섞인 더스티 퍼플</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#9B82B8">#9B82B8</div>
+        <div class="meta">
+          <div class="name">5. 연자주</div>
+          <div class="codes">RGB 155, 130, 184<br />HEX #9B82B8</div>
+          <div class="desc">라일락 톤. 가볍고 모던. 강조색으로도 OK</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#4A2E4D">#4A2E4D</div>
+        <div class="meta">
+          <div class="name">6. 자단 (紫檀)</div>
+          <div class="codes">RGB 74, 46, 77<br />HEX #4A2E4D</div>
+          <div class="desc">자단목 같은 가장 어두운 보라. 다크 모드용</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>단청 전통색 — 톤 다운 버전</h2>
+    <p class="sub" style="margin-top:-8px">오방색 + 단청 안료에서 추출, 위 보라 팔레트와 어울리도록 채도 조정</p>
+
+    <div class="grid">
+      <div class="swatch">
+        <div class="chip" style="background:#C44536">#C44536</div>
+        <div class="meta">
+          <div class="name">7. 장단 (長丹)</div>
+          <div class="codes">RGB 196, 69, 54<br />HEX #C44536</div>
+          <div class="desc">단청의 대표 주홍. 채도 낮춰 떡칠 안 되게</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#8C3A2E">#8C3A2E</div>
+        <div class="meta">
+          <div class="name">8. 석간주 (石間朱)</div>
+          <div class="codes">RGB 140, 58, 46<br />HEX #8C3A2E</div>
+          <div class="desc">철산화물 적색. 깊고 흙빛 도는 벽돌색</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#2E4A7B">#2E4A7B</div>
+        <div class="meta">
+          <div class="name">9. 군청 (群靑)</div>
+          <div class="codes">RGB 46, 74, 123<br />HEX #2E4A7B</div>
+          <div class="desc">단청의 대표 청색. 자청과 자연스럽게 연결</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#5A7BA3">#5A7BA3</div>
+        <div class="meta">
+          <div class="name">10. 삼청 (三靑)</div>
+          <div class="codes">RGB 90, 123, 163<br />HEX #5A7BA3</div>
+          <div class="desc">옅은 청. 더스티 블루, 보조색으로 좋음</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#3D6B4A">#3D6B4A</div>
+        <div class="meta">
+          <div class="name">11. 양록 (洋綠)</div>
+          <div class="codes">RGB 61, 107, 74<br />HEX #3D6B4A</div>
+          <div class="desc">진한 청록. 단청의 대표 녹색</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#7A9B7E">#7A9B7E</div>
+        <div class="meta">
+          <div class="name">12. 뇌록 (磊綠)</div>
+          <div class="codes">RGB 122, 155, 126<br />HEX #7A9B7E</div>
+          <div class="desc">단청 바탕칠로 쓰이는 부드러운 녹. 세이지</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#C9A24A">#C9A24A</div>
+        <div class="meta">
+          <div class="name">13. 황 (黃)</div>
+          <div class="codes">RGB 201, 162, 74<br />HEX #C9A24A</div>
+          <div class="desc">단청 황금빛. 보라와 보색에 가까워 강조 효과 큼</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#F2EAD3; color:#1a1a1a; text-shadow:none">#F2EAD3</div>
+        <div class="meta">
+          <div class="name">14. 호분 (胡粉)</div>
+          <div class="codes">RGB 242, 234, 211<br />HEX #F2EAD3</div>
+          <div class="desc">굴껍질 백색. 따뜻한 크림. 배경/텍스트용</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="chip" style="background:#1F1A1A">#1F1A1A</div>
+        <div class="meta">
+          <div class="name">15. 먹 (墨)</div>
+          <div class="codes">RGB 31, 26, 26<br />HEX #1F1A1A</div>
+          <div class="desc">먹빛. 순흑보다 따뜻한 검정. 본문 텍스트용</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>조합 미리보기</h2>
+
+    <div class="combo-row">
+      <div class="combo-card" style="background:#3D3470; color:#fff">
+        <div class="combo-label">모던 / 세련</div>
+        <div>
+          <div class="combo-title">자청 메인 + 연자주 강조</div>
+          <span class="accent-pill" style="background:#9B82B8; color:#1a1a1a">강조 #9B82B8</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="combo-row">
+      <div class="combo-card" style="background:#6B4F73; color:#fff">
+        <div class="combo-label">전통 / 따뜻</div>
+        <div>
+          <div class="combo-title">흙보라 메인 + 황 강조</div>
+          <span class="accent-pill" style="background:#C9A24A; color:#1a1a1a">강조 #C9A24A</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="combo-row">
+      <div class="combo-card" style="background:#4A2E4D; color:#F2EAD3">
+        <div class="combo-label">다크 모드</div>
+        <div>
+          <div class="combo-title">자단 메인 + 단청 백 텍스트</div>
+          <span class="accent-pill" style="background:#F2EAD3; color:#4A2E4D">텍스트 #F2EAD3</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
