@@ -2,6 +2,7 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/geist';
+@import '@fontsource/gowun-dodum';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -39,7 +40,7 @@
   --danch-ink-body: #3d3535;
   --danch-ink-secondary: #6b6363;
   --danch-ink-tertiary: #948c8c;
-  --danch-ink-disabled: #bfb8b8;
+  --danch-ink-light: #bfb8b8;
 
   /* 단청 보더 / 서피스 */
   --danch-stroke-strong: #c9c5bf;
@@ -64,6 +65,7 @@
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
+  font-family: 'Gowun Dodum', sans-serif;
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -189,7 +191,7 @@
   --color-ink-body: var(--danch-ink-body);
   --color-ink-secondary: var(--danch-ink-secondary);
   --color-ink-tertiary: var(--danch-ink-tertiary);
-  --color-ink-disabled: var(--danch-ink-disabled);
+  --color-ink-light: var(--danch-ink-light);
 
   /* 단청 보더 / 서피스 */
   --color-stroke-strong: var(--danch-stroke-strong);
