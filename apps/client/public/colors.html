@@ -237,6 +237,157 @@
         width: 100%;
       }
       .divider-usage { font-size: 11px; color: #999; margin-top: 6px; }
+
+      /* ============ Design System ============ */
+      .ds-section {
+        background: #fff;
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 48px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+      }
+      .ds-block {
+        padding: 24px 0;
+        border-top: 1px solid #EDEAE4;
+      }
+      .ds-block:first-of-type { border-top: 0; padding-top: 8px; }
+      .ds-block-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .ds-block-name { font-size: 14px; font-weight: 600; color: #1F1A1A; }
+      .ds-block-hint { font-size: 11px; color: #948C8C; }
+      .ds-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .ds-col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 360px;
+      }
+
+      /* Button */
+      .ds-btn {
+        font: 500 13px/1 -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+        border: 1px solid transparent;
+      }
+      .ds-btn:disabled { cursor: not-allowed; opacity: 0.4; }
+      .ds-btn-filled { background: #8C3A2E; color: #fff; }
+      .ds-btn-filled:not(:disabled):hover { background: #692C23; }
+      .ds-btn-outline {
+        background: transparent;
+        color: #8C3A2E;
+        border-color: #8C3A2E;
+      }
+      .ds-btn-outline:not(:disabled):hover { background: #C69D9722; }
+
+      /* Input / Textarea / Select */
+      .ds-field {
+        font: 400 13px/1.4 -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #DEDAD4;
+        border-radius: 8px;
+        background: #fff;
+        color: #3D3535;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        box-sizing: border-box;
+      }
+      .ds-field::placeholder { color: #BFB8B8; }
+      .ds-field:focus {
+        border-color: #8C3A2E;
+        box-shadow: 0 0 0 3px #C69D9755;
+      }
+      .ds-field:disabled {
+        background: #F6F3EE;
+        color: #948C8C;
+        cursor: not-allowed;
+      }
+      .ds-textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+      .ds-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236B6363' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
+      }
+      .ds-label-text {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: #3D3535;
+        margin-bottom: 6px;
+      }
+
+      /* Card */
+      .ds-card {
+        background: #fff;
+        border: 1px solid #DEDAD4;
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 320px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      }
+      .ds-card-title { font-size: 15px; font-weight: 600; color: #1F1A1A; margin: 0 0 6px; }
+      .ds-card-body { font-size: 13px; color: #6B6363; line-height: 1.6; margin: 0 0 14px; }
+      .ds-card-foot { display: flex; gap: 8px; }
+
+      /* Radio / Checkbox */
+      .ds-choice {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #3D3535;
+        cursor: pointer;
+        user-select: none;
+      }
+      .ds-choice input { position: absolute; opacity: 0; pointer-events: none; }
+      .ds-choice-box {
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid #C9C5BF;
+        background: #fff;
+        display: inline-grid;
+        place-items: center;
+        transition: border-color 0.15s, background 0.15s;
+        flex-shrink: 0;
+      }
+      .ds-choice-box.is-radio { border-radius: 999px; }
+      .ds-choice-box.is-check { border-radius: 4px; }
+      .ds-choice:hover .ds-choice-box { border-color: #8C3A2E; }
+      .ds-choice input:checked ~ .ds-choice-box {
+        background: #8C3A2E;
+        border-color: #8C3A2E;
+      }
+      .ds-choice-box::after { content: ""; opacity: 0; transition: opacity 0.1s; }
+      .ds-choice-box.is-radio::after {
+        width: 7px; height: 7px; border-radius: 999px; background: #fff;
+      }
+      .ds-choice-box.is-check::after {
+        width: 10px; height: 6px;
+        border-left: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+        transform: translateY(-1px) rotate(-45deg);
+      }
+      .ds-choice input:checked ~ .ds-choice-box::after { opacity: 1; }
+      .ds-choice input:disabled ~ .ds-choice-box {
+        background: #F6F3EE;
+        border-color: #DEDAD4;
+      }
+      .ds-choice:has(input:disabled) { color: #948C8C; cursor: not-allowed; }
     </style>
   </head>
   <body>
@@ -500,180 +651,139 @@
       </div>
     </div>
 
-    <h2 style="margin-top:0">전체 후보</h2>
-
-    <div class="grid">
-      <div class="swatch">
-        <div class="chip" style="background:#3D3470">#3D3470</div>
-        <div class="meta">
-          <div class="name">1. 자청 (紫靑)</div>
-          <div class="codes">RGB 61, 52, 112<br />HEX #3D3470</div>
-          <div class="desc">군청 + 자색. 깊은 블루-바이올렛. 차분·신비</div>
+    <h2>디자인 시스템</h2>
+    <section class="ds-section">
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Button</div>
+          <div class="ds-block-hint">filled · outline (석간주 베이스)</div>
+        </div>
+        <div class="ds-row">
+          <button class="ds-btn ds-btn-filled">결과보기</button>
+          <button class="ds-btn ds-btn-outline">취소</button>
+          <button class="ds-btn ds-btn-filled" disabled>비활성</button>
+          <button class="ds-btn ds-btn-outline" disabled>비활성</button>
         </div>
       </div>
 
-      <div class="swatch">
-        <div class="chip" style="background:#553D6B">#553D6B</div>
-        <div class="meta">
-          <div class="name">2. 포도 (葡萄)</div>
-          <div class="codes">RGB 85, 61, 107<br />HEX #553D6B</div>
-          <div class="desc">잘 익은 포도빛. 채도 낮고 묵직</div>
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Input</div>
+          <div class="ds-block-hint">focus 시 석간주 보더 + ring</div>
+        </div>
+        <div class="ds-col">
+          <div>
+            <label class="ds-label-text" for="ds-input-1">닉네임</label>
+            <input id="ds-input-1" class="ds-field" type="text" placeholder="예: 몽객" />
+          </div>
+          <div>
+            <label class="ds-label-text" for="ds-input-2">비활성</label>
+            <input id="ds-input-2" class="ds-field" type="text" placeholder="입력 불가" disabled />
+          </div>
         </div>
       </div>
 
-      <div class="swatch">
-        <div class="chip" style="background:#7B3F5F">#7B3F5F</div>
-        <div class="meta">
-          <div class="name">3. 자주 (紫朱)</div>
-          <div class="codes">RGB 123, 63, 95<br />HEX #7B3F5F</div>
-          <div class="desc">단청 적색과 자색의 중간. 전통·고급</div>
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Textarea</div>
+          <div class="ds-block-hint">vertical resize</div>
+        </div>
+        <div class="ds-col">
+          <textarea class="ds-field ds-textarea" placeholder="꿈을 적어보세요…" rows="4"></textarea>
         </div>
       </div>
 
-      <div class="swatch">
-        <div class="chip" style="background:#6B4F73">#6B4F73</div>
-        <div class="meta">
-          <div class="name">4. 흙보라</div>
-          <div class="codes">RGB 107, 79, 115<br />HEX #6B4F73</div>
-          <div class="desc">석간주의 흙빛이 섞인 더스티 퍼플</div>
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Select</div>
+          <div class="ds-block-hint">native select + custom arrow</div>
+        </div>
+        <div class="ds-col">
+          <select class="ds-field ds-select">
+            <option>오욕칠정 선택…</option>
+            <option>희 (喜)</option>
+            <option>노 (怒)</option>
+            <option>애 (哀)</option>
+            <option>락 (樂)</option>
+          </select>
         </div>
       </div>
 
-      <div class="swatch">
-        <div class="chip" style="background:#9B82B8">#9B82B8</div>
-        <div class="meta">
-          <div class="name">5. 연자주</div>
-          <div class="codes">RGB 155, 130, 184<br />HEX #9B82B8</div>
-          <div class="desc">라일락 톤. 가볍고 모던. 강조색으로도 OK</div>
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Card</div>
+          <div class="ds-block-hint">기본 보더 + 미세 그림자</div>
+        </div>
+        <div class="ds-row">
+          <div class="ds-card">
+            <h4 class="ds-card-title">어젯밤의 꿈</h4>
+            <p class="ds-card-body">물가에서 누군가 손을 흔들었습니다. 얼굴은 보이지 않았지만 따뜻한 기분이 들었어요.</p>
+            <div class="ds-card-foot">
+              <button class="ds-btn ds-btn-filled">자세히 보기</button>
+              <button class="ds-btn ds-btn-outline">삭제</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="swatch">
-        <div class="chip" style="background:#4A2E4D">#4A2E4D</div>
-        <div class="meta">
-          <div class="name">6. 자단 (紫檀)</div>
-          <div class="codes">RGB 74, 46, 77<br />HEX #4A2E4D</div>
-          <div class="desc">자단목 같은 가장 어두운 보라. 다크 모드용</div>
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Radio</div>
+          <div class="ds-block-hint">단일 선택</div>
         </div>
-      </div>
-    </div>
-
-    <h2>단청 전통색 — 톤 다운 버전</h2>
-    <p class="sub" style="margin-top:-8px">오방색 + 단청 안료에서 추출, 위 보라 팔레트와 어울리도록 채도 조정</p>
-
-    <div class="grid">
-      <div class="swatch">
-        <div class="chip" style="background:#C44536">#C44536</div>
-        <div class="meta">
-          <div class="name">7. 장단 (長丹)</div>
-          <div class="codes">RGB 196, 69, 54<br />HEX #C44536</div>
-          <div class="desc">단청의 대표 주홍. 채도 낮춰 떡칠 안 되게</div>
-        </div>
-      </div>
-
-      <div class="swatch">
-        <div class="chip" style="background:#8C3A2E">#8C3A2E</div>
-        <div class="meta">
-          <div class="name">8. 석간주 (石間朱)</div>
-          <div class="codes">RGB 140, 58, 46<br />HEX #8C3A2E</div>
-          <div class="desc">철산화물 적색. 깊고 흙빛 도는 벽돌색</div>
+        <div class="ds-row">
+          <label class="ds-choice">
+            <input type="radio" name="ds-radio" checked />
+            <span class="ds-choice-box is-radio"></span>
+            길몽
+          </label>
+          <label class="ds-choice">
+            <input type="radio" name="ds-radio" />
+            <span class="ds-choice-box is-radio"></span>
+            흉몽
+          </label>
+          <label class="ds-choice">
+            <input type="radio" name="ds-radio" />
+            <span class="ds-choice-box is-radio"></span>
+            모르겠음
+          </label>
+          <label class="ds-choice">
+            <input type="radio" name="ds-radio" disabled />
+            <span class="ds-choice-box is-radio"></span>
+            비활성
+          </label>
         </div>
       </div>
 
-      <div class="swatch">
-        <div class="chip" style="background:#2E4A7B">#2E4A7B</div>
-        <div class="meta">
-          <div class="name">9. 군청 (群靑)</div>
-          <div class="codes">RGB 46, 74, 123<br />HEX #2E4A7B</div>
-          <div class="desc">단청의 대표 청색. 자청과 자연스럽게 연결</div>
+      <div class="ds-block">
+        <div class="ds-block-head">
+          <div class="ds-block-name">Checkbox</div>
+          <div class="ds-block-hint">다중 선택</div>
+        </div>
+        <div class="ds-row">
+          <label class="ds-choice">
+            <input type="checkbox" />
+            <span class="ds-choice-box is-check"></span>
+            물
+          </label>
+          <label class="ds-choice">
+            <input type="checkbox" />
+            <span class="ds-choice-box is-check"></span>
+            동물
+          </label>
+          <label class="ds-choice">
+            <input type="checkbox" />
+            <span class="ds-choice-box is-check"></span>
+            낯선 사람
+          </label>
+          <label class="ds-choice">
+            <input type="checkbox" disabled />
+            <span class="ds-choice-box is-check"></span>
+            비활성
+          </label>
         </div>
       </div>
+    </section>
 
-      <div class="swatch">
-        <div class="chip" style="background:#5A7BA3">#5A7BA3</div>
-        <div class="meta">
-          <div class="name">10. 삼청 (三靑)</div>
-          <div class="codes">RGB 90, 123, 163<br />HEX #5A7BA3</div>
-          <div class="desc">옅은 청. 더스티 블루, 보조색으로 좋음</div>
-        </div>
-      </div>
-
-      <div class="swatch">
-        <div class="chip" style="background:#3D6B4A">#3D6B4A</div>
-        <div class="meta">
-          <div class="name">11. 양록 (洋綠)</div>
-          <div class="codes">RGB 61, 107, 74<br />HEX #3D6B4A</div>
-          <div class="desc">진한 청록. 단청의 대표 녹색</div>
-        </div>
-      </div>
-
-      <div class="swatch">
-        <div class="chip" style="background:#7A9B7E">#7A9B7E</div>
-        <div class="meta">
-          <div class="name">12. 뇌록 (磊綠)</div>
-          <div class="codes">RGB 122, 155, 126<br />HEX #7A9B7E</div>
-          <div class="desc">단청 바탕칠로 쓰이는 부드러운 녹. 세이지</div>
-        </div>
-      </div>
-
-      <div class="swatch">
-        <div class="chip" style="background:#C9A24A">#C9A24A</div>
-        <div class="meta">
-          <div class="name">13. 황 (黃)</div>
-          <div class="codes">RGB 201, 162, 74<br />HEX #C9A24A</div>
-          <div class="desc">단청 황금빛. 보라와 보색에 가까워 강조 효과 큼</div>
-        </div>
-      </div>
-
-      <div class="swatch">
-        <div class="chip" style="background:#F2EAD3; color:#1a1a1a; text-shadow:none">#F2EAD3</div>
-        <div class="meta">
-          <div class="name">14. 호분 (胡粉)</div>
-          <div class="codes">RGB 242, 234, 211<br />HEX #F2EAD3</div>
-          <div class="desc">굴껍질 백색. 따뜻한 크림. 배경/텍스트용</div>
-        </div>
-      </div>
-
-      <div class="swatch">
-        <div class="chip" style="background:#1F1A1A">#1F1A1A</div>
-        <div class="meta">
-          <div class="name">15. 먹 (墨)</div>
-          <div class="codes">RGB 31, 26, 26<br />HEX #1F1A1A</div>
-          <div class="desc">먹빛. 순흑보다 따뜻한 검정. 본문 텍스트용</div>
-        </div>
-      </div>
-    </div>
-
-    <h2>조합 미리보기</h2>
-
-    <div class="combo-row">
-      <div class="combo-card" style="background:#3D3470; color:#fff">
-        <div class="combo-label">모던 / 세련</div>
-        <div>
-          <div class="combo-title">자청 메인 + 연자주 강조</div>
-          <span class="accent-pill" style="background:#9B82B8; color:#1a1a1a">강조 #9B82B8</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="combo-row">
-      <div class="combo-card" style="background:#6B4F73; color:#fff">
-        <div class="combo-label">전통 / 따뜻</div>
-        <div>
-          <div class="combo-title">흙보라 메인 + 황 강조</div>
-          <span class="accent-pill" style="background:#C9A24A; color:#1a1a1a">강조 #C9A24A</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="combo-row">
-      <div class="combo-card" style="background:#4A2E4D; color:#F2EAD3">
-        <div class="combo-label">다크 모드</div>
-        <div>
-          <div class="combo-title">자단 메인 + 단청 백 텍스트</div>
-          <span class="accent-pill" style="background:#F2EAD3; color:#4A2E4D">텍스트 #F2EAD3</span>
-        </div>
-      </div>
-    </div>
   </body>
 </html>
