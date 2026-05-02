@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Layout } from '@/components/layout/Layout';
-import { MainPage } from '@/pages/main/MainPage';
-import { GardenPage } from '@/pages/garden/GardenPage';
+import { Layout } from '@/shared/layout/Layout';
+import { GardenPage } from '@/pages/garden';
 import { AuthProvider } from '@/hooks/useAuth';
+import { MainPage } from '@/pages/main';
 
 export default function App() {
   return (
