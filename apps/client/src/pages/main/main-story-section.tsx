@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import Story1Image from '@/assets/description_1.png';
 import Story2Image from '@/assets/description_2.png';
 import Story3Image from '@/assets/description_3.png';
@@ -31,16 +32,40 @@ const blocks = [
   },
 ];
 
-/**
- * 스토리 섹션
- */
 export function StorySection() {
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('in-view', entry.isIntersecting);
+        });
+      },
+      { threshold: 0.15 },
+    );
+    cardRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id='story' className='bg-yangrok-900 px-6 py-24'>
+      <style>{`
+        .story-card {
+          opacity: 0;
+          transform: translateY(48px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .story-card.in-view {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      `}</style>
       <div className='mx-auto flex max-w-5xl flex-col gap-16 text-center'>
-        {blocks.map((b) => (
+        {blocks.map((b, i) => (
           <div
-            className='flex items-center gap-6 bg-white rounded-md overflow-hidden shadow-md'
+            ref={(el) => { cardRefs.current[i] = el; }}
+            className='story-card flex items-center gap-6 bg-white rounded-md overflow-hidden shadow-md'
             key={b.heading}
           >
             {/* 이미지 */}
