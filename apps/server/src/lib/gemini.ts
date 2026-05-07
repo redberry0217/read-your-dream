@@ -9,7 +9,6 @@ if (!API_KEY) {
 export const genAI = new GoogleGenerativeAI(API_KEY);
 
 export const getModel = (type: "FREE" | "PREMIUM") => {
-  // Updated for 2026 model availability
-  const modelName = type === "FREE" ? "gemini-2.5-flash" : "gemini-2.5-pro";
-  return genAI.getGenerativeModel({ model: modelName });
+  // Using gemini-3-flash-preview as per 2026 availability
+  return genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 };
