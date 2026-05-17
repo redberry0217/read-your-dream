@@ -7,6 +7,7 @@ import authPlugin from './plugins/auth.plugin.js';
 import { dreamRoutes } from './routes/dream.routes.js';
 import { userRoutes } from './routes/user.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
+import { adminRoutes } from './routes/admin.routes.js';
 
 import { prisma } from './lib/prisma.js';
 
@@ -110,6 +111,7 @@ app.addSchema({
 await app.register(dreamRoutes, { prefix: '/api/dream' });
 await app.register(userRoutes, { prefix: '/api/user' });
 await app.register(authRoutes, { prefix: '/api/auth' });
+await app.register(adminRoutes, { prefix: '/api/admin' });
 
 app.get('/', async () => ({ 
   message: 'Welcome to 사주다로 (Dream Tarot) API',

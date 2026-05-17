@@ -30,7 +30,7 @@ export async function authRoutes(app: FastifyInstance) {
     const body = request.body as { email: string; name?: string } | undefined;
     
     if (!body || !body.email) {
-      return reply.status(400).send({ success: false, error: 'Email is required' });
+      return reply.status(400 as any).send({ success: false, error: 'Email is required' });
     }
 
     const { email, name } = body;

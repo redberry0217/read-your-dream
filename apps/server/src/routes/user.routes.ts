@@ -57,7 +57,7 @@ export async function userRoutes(app: FastifyInstance) {
     const userId = (request.user as any).id;
 
     if (!body || !body.amount || body.amount <= 0) {
-      return reply.status(400).send({ success: false, error: 'Invalid amount' });
+      return reply.status(400 as any).send({ success: false, error: 'Invalid amount' });
     }
 
     const { amount } = body;

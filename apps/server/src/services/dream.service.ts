@@ -1,5 +1,5 @@
 import { getModel } from "../lib/gemini.js";
-import { Emotions, DreamType } from "@mjdr/shared-types";
+import { DreamType } from "@mjdr/shared-types";
 
 export class DreamService {
   static async interpretDream(content: string, userStatus?: { recentWorry?: string; feeling?: string }) {

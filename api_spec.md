@@ -235,7 +235,24 @@
   - **프론트엔드 연동 가이드:**
     - 몽다정원 리스트에서 오브젝트나 꿈 카드를 클릭했을 때 해당 해몽 결과를 상세 팝업/모달 형태로 다시 렌더링하기 위해 사용합니다.
 
-### 4-3. 내가 여태까지 수집한 타로 도감 조회 (도감용)
+### 4-3. 꿈 기록 카드 삭제
+- **메서드 & 경로:** `DELETE /api/dream/logs/:logId`
+- **인증 필요 여부:** O (JWT Bearer Token 헤더 필요)
+- **파라미터:** `logId` (꿈 기록 cuid)
+- **응답 (Response):**
+  ```json
+  {
+    "success": true,
+    "message": "Dream log deleted successfully"
+  }
+  ```
+- **연동 현황 & 안내:**
+  - **백엔드:** 준비 완료 ✅
+  - **프론트엔드 연동 가이드:**
+    - 몽다정원의 꿈 오브젝트 모달/상세창에서 **`[기록 삭제]`** 혹은 휴지통 버튼을 누를 때 호출합니다. 
+    - 본인의 기록만 안전하게 삭제 가능하며, 삭제 완료 후 정원 화면의 해당 식물/별 오프젝트를 즉시 제거하고 리스트를 다시 동기화합니다.
+
+### 4-4. 내가 여태까지 수집한 타로 도감 조회 (도감용)
 - **메서드 & 경로:** `GET /api/dream/my-tarots`
 - **인증 필요 여부:** O (JWT Bearer Token 헤더 필요)
 - **응답 (Response):**
@@ -271,3 +288,106 @@
   - **프론트엔드 연동 가이드:**
     - 몽다정원 내의 **`[내가 뽑은 타로 도감]`** 메뉴나 탭을 제공할 때 사용합니다.
     - 총 78장의 카드 중 유저가 여태까지 수집(해몽에 등장)한 타로 목록을 가시적으로 뿌려주고, 아직 수집하지 못한 카드는 비활성화(어둡게 처리)하는 방식으로 감성적인 게이미피케이션(수집 요소)을 극대화할 수 있습니다!
+
+---
+
+## 👑 5. 관리자 백오피스 (Admin) API
+
+이 API들은 서비스 관리 및 통계 모니터링, 고객 지원(CS), 그리고 타로 프롬프트 해몽 튜닝을 위한 **백오피스/어드민 대시보드 연동용** API 세트입니다.
+*   **공통 보안 적용:** 어드민 보안을 위해 요청 헤더(Header)에 **`x-admin-key: <어드민-비밀키>`**를 반드시 포함해야 조회가 가능합니다.
+*   **기본 비밀키 (Local 개발 시):** `super-secret-admin-key`
+
+### 5-1. 어드민 대시보드 통계 지표 조회
+- **메서드 & 경로:** `GET /api/admin/stats`
+- **보안 설정:** Header에 `x-admin-key` 필수 포함
+- **응답 (Response):**
+  ```json
+  {
+    "success": true,
+    "data": {
+      "totalUsers": 12,      // 서비스 가입 총 유저수
+      "totalLogs": 24,       // 생성된 총 꿈 해몽 리포트 개수
+      "freeLogs": 16,        // 무료 해몽 개수
+      "premiumLogs": 8,      // 쥬얼 차감 유료 심층 해몽 개수
+      "totalJewels": 840     // 시스템 내에 유통 중인 총 쥬얼량
+    }
+  }
+  ```
+
+### 5-2. 전체 가입 유저 목록 조회
+- **메서드 & 경로:** `GET /api/admin/users`
+- **보안 설정:** Header에 `x-admin-key` 필수 포함
+- **응답 (Response):**
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "cuid-user-1",
+        "email": "jypark@enki.co.kr",
+        "name": "박재영",
+        "jewels": 50,
+        "provider": "MOCK",
+        "logCount": 3 // 해당 유저가 기록한 총 꿈 개수
+      },
+      ...
+    ]
+  }
+  ```
+
+### 5-3. 특정 유저 쥬얼 임의 지급/차감 (CS용)
+- **메서드 & 경로:** `POST /api/admin/users/:userId/jewels`
+- **보안 설정:** Header에 `x-admin-key` 필수 포함
+- **요청 Body:**
+  ```json
+  {
+    "amount": 20 // 더해주고 싶은 쥬얼량 (차감하고 싶을 땐 -20처럼 음수 전송)
+  }
+  ```
+- **응답 (Response):**
+  ```json
+  {
+    "success": true,
+    "userId": "cuid-user-1",
+    "name": "박재영",
+    "jewels": 70, // 반영 완료 후 최종 보유 쥬얼량
+    "message": "Successfully adjusted user jewels from 50 to 70."
+  }
+  ```
+
+### 5-4. 글로벌 꿈 해몽 히스토리 피드 조회 (감시/모니터링용)
+- **메서드 & 경로:** `GET /api/admin/logs`
+- **보안 설정:** Header에 `x-admin-key` 필수 포함
+- **응답 (Response):**
+  - 전체 회원의 꿈 해몽 리포트 원본 및 해몽 리스트를 생성 시간 역순(`createdAt: 'desc'`)으로 반환합니다. (어떤 회원이 어떤 해몽을 받았는지 전체 모니터링 가능)
+
+### 5-5. 타로 사전 해석 데이터 튜닝 (프롬프트/해석 사전 수정)
+- **메서드 & 경로:** `PUT /api/admin/tarots/:id`
+- **파라미터:** `id` (타로 카드 ID, 1~78번 중 튜닝할 카드 번호)
+- **보안 설정:** Header에 `x-admin-key` 필수 포함
+- **요청 Body:** (수정할 필드만 부분 선택하여 전송 가능)
+  ```json
+  {
+    "name": "The Fool (바보)",
+    "keywords": "새로운 시작, 자유, 모험, 무모함",
+    "keywordsRev": "불안정, 미련, 충동적, 정체",
+    "meaningUpright": "아주 기품 넘치게 수정한 정방향 해석 텍스트...",
+    "meaningReversed": "조선 시대 역술가 컨셉을 극대화한 역방향 지적 텍스트...",
+    "practicalAdvice": "바보처럼 굴지 말고 현실을 냉엄하게 돌아보시오.",
+    "orientalVibe": "동양 사상으로 빗댄 사주학적 비고 내용"
+  }
+  ```
+- **응답 (Response):**
+  ```json
+  {
+    "success": true,
+    "message": "Tarot card updated successfully",
+    "data": {
+      "id": 1,
+      "name": "The Fool (바보)",
+      "category": "MAJOR",
+      "keywords": "새로운 시작...",
+      ... // 수정 완료 후 데이터베이스의 전체 타로 카드 행 반환
+    }
+  }
+  ```

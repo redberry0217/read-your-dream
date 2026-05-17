@@ -135,7 +135,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       };
     } catch (error: any) {
       fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: error.message });
+      return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 
@@ -183,11 +183,11 @@ export async function dreamRoutes(fastify: FastifyInstance) {
         include: { user: true }
       });
 
-      if (!log) return reply.status(404).send({ success: false, error: "Log not found" });
+      if (!log) return reply.status(404 as any).send({ success: false, error: "Log not found" });
 
       // Ownership check
       if (log.userId !== authenticatedUserId) {
-        return reply.status(403).send({ success: false, error: "This log does not belong to you" });
+        return reply.status(403 as any).send({ success: false, error: "This log does not belong to you" });
       }
 
       // Check & Deduct Jewels (10)
@@ -195,7 +195,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       const currentJewels = currentUser?.jewels || 0;
 
       if (currentJewels < 10) {
-        return reply.status(403).send({ 
+        return reply.status(403 as any).send({ 
           success: false, 
           error: `Insufficient jewels (10 required. Current: ${currentJewels})` 
         });
@@ -219,7 +219,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       return { success: true, data: updatedLog };
     } catch (error: any) {
       fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: error.message });
+      return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 
@@ -263,11 +263,11 @@ export async function dreamRoutes(fastify: FastifyInstance) {
         where: { id: logId }
       });
 
-      if (!log) return reply.status(404).send({ success: false, error: "Log not found" });
+      if (!log) return reply.status(404 as any).send({ success: false, error: "Log not found" });
 
       // Ownership check
       if (log.userId !== authenticatedUserId) {
-        return reply.status(403).send({ success: false, error: "This log does not belong to you" });
+        return reply.status(403 as any).send({ success: false, error: "This log does not belong to you" });
       }
 
       const finalResult = await DreamService.consolidatedAnalysis(
@@ -287,7 +287,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       return { success: true, data: updatedLog };
     } catch (error: any) {
       fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: error.message });
+      return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 
@@ -321,7 +321,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       return { success: true, data: logs };
     } catch (error: any) {
       fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: error.message });
+      return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 
@@ -358,17 +358,68 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       });
 
       if (!log) {
-        return reply.status(404).send({ success: false, error: "Log not found" });
+        return reply.status(404 as any).send({ success: false, error: "Log not found" });
       }
 
       if (log.userId !== userId) {
-        return reply.status(403).send({ success: false, error: "Access denied" });
+        return reply.status(403 as any).send({ success: false, error: "Access denied" });
       }
 
       return { success: true, data: log };
     } catch (error: any) {
       fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: error.message });
+      return reply.status(500 as any).send({ success: false, error: error.message });
+    }
+  });
+
+  // Delete a dream log by ID
+  fastify.delete("/logs/:logId", {
+    preHandler: [fastify.authenticate],
+    schema: {
+      description: "Delete a dream log by ID",
+      tags: ["dream"],
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: "object",
+        required: ["logId"],
+        properties: {
+          logId: { type: "string" }
+        }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            message: { type: "string" }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { logId } = request.params as any;
+    const userId = (request.user as any).id;
+    try {
+      const log = await prisma.dreamLog.findUnique({
+        where: { id: logId }
+      });
+
+      if (!log) {
+        return reply.status(404 as any).send({ success: false, error: "Log not found" });
+      }
+
+      if (log.userId !== userId) {
+        return reply.status(403 as any).send({ success: false, error: "Access denied" });
+      }
+
+      await prisma.dreamLog.delete({
+        where: { id: logId }
+      });
+
+      return { success: true, message: "Dream log deleted successfully" };
+    } catch (error: any) {
+      fastify.log.error(error);
+      return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 
@@ -398,7 +449,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       const logs = await prisma.dreamLog.findMany({
         where: { 
           userId,
-          tarotAnalysis: { not: null }
+          tarotAnalysis: { not: null as any }
         },
         select: {
           tarotAnalysis: true,
@@ -455,7 +506,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       return { success: true, data: Array.from(uniqueCardsMap.values()) };
     } catch (error: any) {
       fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: error.message });
+      return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 }
