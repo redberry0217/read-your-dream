@@ -24,7 +24,13 @@ export async function userRoutes(app: FastifyInstance) {
       throw app.httpErrors.notFound('User not found');
     }
     
-    return user;
+    const { status, ...rest } = user;
+    return {
+      ...rest,
+      nickname: user.nickname || user.name || '',
+      recentWorry: status?.recentWorry || null,
+      feeling: status?.feeling || null
+    };
   });
 
   // Charge jewels (Mock/Test API)
@@ -73,6 +79,58 @@ export async function userRoutes(app: FastifyInstance) {
       success: true,
       jewels: updatedUser.jewels,
       message: `${amount} jewels charged successfully (Mock).`
+    };
+  });
+
+  // Update user current status (Worry and Feeling)
+  app.put('/status', {
+    preHandler: [app.authenticate],
+    schema: {
+      description: 'Update user current status (worries and feelings)',
+      tags: ['user'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          recentWorry: { type: 'string', nullable: true },
+          feeling: { type: 'string', nullable: true }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                recentWorry: { type: 'string', nullable: true },
+                feeling: { type: 'string', nullable: true }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, async (request) => {
+    const userId = (request.user as any).id;
+    const body = request.body as { recentWorry?: string | null; feeling?: string | null } | undefined;
+
+    const recentWorry = body?.recentWorry ?? null;
+    const feeling = body?.feeling ?? null;
+
+    const status = await prisma.userStatus.upsert({
+      where: { userId },
+      update: { recentWorry, feeling },
+      create: { userId, recentWorry, feeling }
+    });
+
+    return {
+      success: true,
+      data: {
+        recentWorry: status.recentWorry,
+        feeling: status.feeling
+      }
     };
   });
 }

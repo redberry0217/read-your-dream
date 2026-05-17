@@ -34,13 +34,15 @@ export async function authRoutes(app: FastifyInstance) {
     }
 
     const { email, name } = body;
+    const finalNickname = name || email.split('@')[0];
 
     const user = await prisma.user.upsert({
       where: { email },
-      update: { name },
+      update: { name, nickname: finalNickname },
       create: {
         email,
         name,
+        nickname: finalNickname,
         jewels: 50, // Give 50 jewels for new users
         provider: 'MOCK',
         providerId: `mock_${email}`
@@ -49,7 +51,15 @@ export async function authRoutes(app: FastifyInstance) {
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
     
-    return { success: true, token, user };
+    return { 
+      success: true, 
+      token, 
+      user: {
+        ...user,
+        recentWorry: null,
+        feeling: null
+      }
+    };
   });
 
   // Google mock social login for frontend seamless testing
@@ -82,10 +92,11 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = await prisma.user.upsert({
       where: { email },
-      update: { name },
+      update: { name, nickname: name },
       create: {
         email,
         name,
+        nickname: name,
         jewels: 50,
         provider: 'GOOGLE',
         providerId: `google_${email.split('@')[0]}`
@@ -93,7 +104,15 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
-    return { success: true, token, user };
+    return { 
+      success: true, 
+      token, 
+      user: {
+        ...user,
+        recentWorry: null,
+        feeling: null
+      }
+    };
   });
 
   // Kakao mock social login for frontend seamless testing
@@ -126,10 +145,11 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = await prisma.user.upsert({
       where: { email },
-      update: { name },
+      update: { name, nickname: name },
       create: {
         email,
         name,
+        nickname: name,
         jewels: 50,
         provider: 'KAKAO',
         providerId: `kakao_${email.split('@')[0]}`
@@ -137,6 +157,14 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
-    return { success: true, token, user };
+    return { 
+      success: true, 
+      token, 
+      user: {
+        ...user,
+        recentWorry: null,
+        feeling: null
+      }
+    };
   });
 }

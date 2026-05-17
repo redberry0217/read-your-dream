@@ -64,7 +64,10 @@ app.addSchema({
     id: { type: 'string' },
     email: { type: 'string' },
     name: { type: 'string', nullable: true },
+    nickname: { type: 'string', nullable: true },
     jewels: { type: 'number' },
+    recentWorry: { type: 'string', nullable: true },
+    feeling: { type: 'string', nullable: true },
     createdAt: { type: 'string' }
   }
 });
