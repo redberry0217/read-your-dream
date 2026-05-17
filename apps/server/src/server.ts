@@ -53,6 +53,57 @@ await app.register(cors, { origin: '*' });
 await app.register(sensible);
 await app.register(authPlugin);
 
+// Shared Schemas for Swagger Models
+app.addSchema({
+  $id: 'User',
+  type: 'object',
+  properties: {
+    id: { type: 'string' },
+    email: { type: 'string' },
+    name: { type: 'string', nullable: true },
+    jewels: { type: 'number' },
+    createdAt: { type: 'string' }
+  }
+});
+
+app.addSchema({
+  $id: 'DreamLog',
+  type: 'object',
+  properties: {
+    id: { type: 'string' },
+    content: { type: 'string' },
+    type: { type: 'string' },
+    ohYok: { type: 'object', nullable: true },
+    chilJung: { type: 'object', nullable: true },
+    tarotCards: { type: 'string', nullable: true },
+    tarotAnalysis: { type: 'array', nullable: true },
+    summary: { type: 'string', nullable: true },
+    analysis: { type: 'string', nullable: true },
+    followUpQuestions: { type: 'array', nullable: true, items: { type: 'string' } },
+    followUpAnswers: { type: 'object', nullable: true },
+    finalReport: { type: 'string', nullable: true },
+    createdAt: { type: 'string' }
+  }
+});
+
+app.addSchema({
+  $id: 'TarotCardDrawn',
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    drawnCount: { type: 'number' },
+    lastDrawnAt: { type: 'string' },
+    details: {
+      type: 'object',
+      properties: {
+        status: { type: 'string' },
+        meaning: { type: 'string' },
+        advice: { type: 'string' }
+      }
+    }
+  }
+});
+
 // Routes
 await app.register(dreamRoutes, { prefix: '/api/dream' });
 await app.register(userRoutes, { prefix: '/api/user' });

@@ -10,16 +10,7 @@ export async function userRoutes(app: FastifyInstance) {
       tags: ['user'],
       security: [{ bearerAuth: [] }],
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            email: { type: 'string' },
-            name: { type: 'string', nullable: true },
-            jewels: { type: 'number' },
-            createdAt: { type: 'string' }
-          }
-        }
+        200: { $ref: 'User#' }
       }
     }
   }, async (request) => {

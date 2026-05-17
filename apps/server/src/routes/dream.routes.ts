@@ -305,21 +305,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
             success: { type: "boolean" },
             data: {
               type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  content: { type: "string" },
-                  type: { type: "string" },
-                  ohYok: { type: "object", nullable: true },
-                  chilJung: { type: "object", nullable: true },
-                  tarotCards: { type: "string", nullable: true },
-                  tarotAnalysis: { type: "array", nullable: true },
-                  summary: { type: "string", nullable: true },
-                  analysis: { type: "string", nullable: true },
-                  createdAt: { type: "string" }
-                }
-              }
+              items: { $ref: "DreamLog#" }
             }
           }
         }
@@ -358,24 +344,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
           type: "object",
           properties: {
             success: { type: "boolean" },
-            data: {
-              type: "object",
-              properties: {
-                id: { type: "string" },
-                content: { type: "string" },
-                type: { type: "string" },
-                ohYok: { type: "object", nullable: true },
-                chilJung: { type: "object", nullable: true },
-                tarotCards: { type: "string", nullable: true },
-                tarotAnalysis: { type: "array", nullable: true },
-                summary: { type: "string", nullable: true },
-                analysis: { type: "string", nullable: true },
-                followUpQuestions: { type: "array", nullable: true, items: { type: "string" } },
-                followUpAnswers: { type: "object", nullable: true },
-                finalReport: { type: "string", nullable: true },
-                createdAt: { type: "string" }
-              }
-            }
+            data: { $ref: "DreamLog#" }
           }
         }
       }
@@ -417,22 +386,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
             success: { type: "boolean" },
             data: {
               type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  drawnCount: { type: "number" },
-                  lastDrawnAt: { type: "string" },
-                  details: {
-                    type: "object",
-                    properties: {
-                      status: { type: "string" },
-                      meaning: { type: "string" },
-                      advice: { type: "string" }
-                    }
-                  }
-                }
-              }
+              items: { $ref: "TarotCardDrawn#" }
             }
           }
         }
