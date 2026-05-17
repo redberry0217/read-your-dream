@@ -8,6 +8,8 @@ import { dreamRoutes } from './routes/dream.routes.js';
 import { userRoutes } from './routes/user.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
 
+import { prisma } from './lib/prisma.js';
+
 const PORT = Number(process.env.PORT ?? 3000);
 const HOST = process.env.HOST ?? '0.0.0.0';
 
@@ -115,7 +117,16 @@ app.get('/', async () => ({
   health: '/health'
 }));
 
-app.get('/health', async () => ({ status: 'ok' }));
+app.get('/health', async (request, reply) => {
+  try {
+    // Perform a tiny query to keep the database awake and active (prevents Supabase sleep)
+    await prisma.$queryRaw`SELECT 1`;
+    return { status: 'ok', db: 'healthy' };
+  } catch (err: any) {
+    app.log.error(err);
+    return reply.status(500).send({ status: 'error', db: 'unreachable', error: err.message });
+  }
+});
 
 try {
   await app.listen({ port: PORT, host: HOST });
