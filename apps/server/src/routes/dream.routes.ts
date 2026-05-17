@@ -199,23 +199,138 @@ export async function dreamRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/logs/:userId", {
+  // Get all logs for the authenticated user (for Garden/History)
+  fastify.get("/my-logs", {
+    preHandler: [fastify.authenticate],
     schema: {
-      description: "Get dream logs for a user",
+      description: "Get authenticated user's dream logs (for Garden list)",
       tags: ["dream"],
+      security: [{ bearerAuth: [] }]
+    }
+  }, async (request, reply) => {
+    const userId = (request.user as any).id;
+    try {
+      const logs = await prisma.dreamLog.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" }
+      });
+      return { success: true, data: logs };
+    } catch (error: any) {
+      fastify.log.error(error);
+      return reply.status(500).send({ success: false, error: error.message });
+    }
+  });
+
+  // Get specific dream log detail
+  fastify.get("/logs/:logId", {
+    preHandler: [fastify.authenticate],
+    schema: {
+      description: "Get detailed dream log by ID",
+      tags: ["dream"],
+      security: [{ bearerAuth: [] }],
       params: {
         type: "object",
+        required: ["logId"],
         properties: {
-          userId: { type: "string" }
+          logId: { type: "string" }
         }
       }
     }
   }, async (request, reply) => {
-    const { userId } = request.params as any;
-    const logs = await prisma.dreamLog.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" }
-    });
-    return { success: true, data: logs };
+    const { logId } = request.params as any;
+    const userId = (request.user as any).id;
+    try {
+      const log = await prisma.dreamLog.findUnique({
+        where: { id: logId }
+      });
+
+      if (!log) {
+        return reply.status(404).send({ success: false, error: "Log not found" });
+      }
+
+      if (log.userId !== userId) {
+        return reply.status(403).send({ success: false, error: "Access denied" });
+      }
+
+      return { success: true, data: log };
+    } catch (error: any) {
+      fastify.log.error(error);
+      return reply.status(500).send({ success: false, error: error.message });
+    }
+  });
+
+  // Get unique tarot cards drawn by the authenticated user
+  fastify.get("/my-tarots", {
+    preHandler: [fastify.authenticate],
+    schema: {
+      description: "Get list of unique tarot cards drawn by the user",
+      tags: ["dream"],
+      security: [{ bearerAuth: [] }]
+    }
+  }, async (request, reply) => {
+    const userId = (request.user as any).id;
+    try {
+      const logs = await prisma.dreamLog.findMany({
+        where: { 
+          userId,
+          tarotAnalysis: { not: null }
+        },
+        select: {
+          tarotAnalysis: true,
+          createdAt: true
+        }
+      });
+
+      const uniqueCardsMap = new Map<string, any>();
+
+      for (const log of logs) {
+        if (!log.tarotAnalysis) continue;
+        
+        let analysisList: any[] = [];
+        if (typeof log.tarotAnalysis === "string") {
+          try {
+            analysisList = JSON.parse(log.tarotAnalysis);
+          } catch {
+            continue;
+          }
+        } else if (Array.isArray(log.tarotAnalysis)) {
+          analysisList = log.tarotAnalysis;
+        }
+
+        for (const item of analysisList) {
+          if (!item || !item.card) continue;
+          
+          const cardName = item.card;
+          if (!uniqueCardsMap.has(cardName)) {
+            uniqueCardsMap.set(cardName, {
+              name: cardName,
+              drawnCount: 1,
+              lastDrawnAt: log.createdAt,
+              details: {
+                status: item.status,
+                meaning: item.meaning,
+                advice: item.advice
+              }
+            });
+          } else {
+            const existing = uniqueCardsMap.get(cardName);
+            existing.drawnCount += 1;
+            if (new Date(log.createdAt) > new Date(existing.lastDrawnAt)) {
+              existing.lastDrawnAt = log.createdAt;
+              existing.details = {
+                status: item.status,
+                meaning: item.meaning,
+                advice: item.advice
+              };
+            }
+          }
+        }
+      }
+
+      return { success: true, data: Array.from(uniqueCardsMap.values()) };
+    } catch (error: any) {
+      fastify.log.error(error);
+      return reply.status(500).send({ success: false, error: error.message });
+    }
   });
 }
