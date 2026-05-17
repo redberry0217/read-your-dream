@@ -8,7 +8,12 @@ if (!API_KEY) {
 
 export const genAI = new GoogleGenerativeAI(API_KEY);
 
-export const getModel = (type: "FREE" | "PREMIUM") => {
-  // Using gemini-3-flash-preview as per 2026 availability
-  return genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+export const getModel = (type: "FREE" | "PREMIUM", jsonMode: boolean = false) => {
+  // Fixed strictly to gemini-3-flash-preview per user constraint (quota optimization)
+  const modelName = "gemini-3-flash-preview";
+  
+  return genAI.getGenerativeModel({ 
+    model: modelName,
+    ...(jsonMode ? { generationConfig: { responseMimeType: "application/json" } } : {})
+  });
 };
