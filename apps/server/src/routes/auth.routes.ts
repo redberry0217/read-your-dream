@@ -71,7 +71,8 @@ export async function authRoutes(app: FastifyInstance) {
         type: 'object',
         properties: {
           email: { type: 'string' },
-          name: { type: 'string' }
+          name: { type: 'string' },
+          redirect: { type: 'string' }
         }
       },
       response: {
@@ -85,8 +86,8 @@ export async function authRoutes(app: FastifyInstance) {
         }
       }
     }
-  }, async (request) => {
-    const query = request.query as { email?: string; name?: string } | undefined;
+  }, async (request, reply) => {
+    const query = request.query as { email?: string; name?: string; redirect?: string } | undefined;
     const email = query?.email || 'google_mock@gmail.com';
     const name = query?.name || '구글몽객';
 
@@ -104,6 +105,12 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
+
+    if (query?.redirect === 'true') {
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      return reply.redirect(`${frontendUrl}?token=${token}&userId=${user.id}`);
+    }
+
     return { 
       success: true, 
       token, 
@@ -124,7 +131,8 @@ export async function authRoutes(app: FastifyInstance) {
         type: 'object',
         properties: {
           email: { type: 'string' },
-          name: { type: 'string' }
+          name: { type: 'string' },
+          redirect: { type: 'string' }
         }
       },
       response: {
@@ -138,8 +146,8 @@ export async function authRoutes(app: FastifyInstance) {
         }
       }
     }
-  }, async (request) => {
-    const query = request.query as { email?: string; name?: string } | undefined;
+  }, async (request, reply) => {
+    const query = request.query as { email?: string; name?: string; redirect?: string } | undefined;
     const email = query?.email || 'kakao_mock@kakao.com';
     const name = query?.name || '카카오몽객';
 
@@ -157,6 +165,12 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     const token = app.jwt.sign({ id: user.id, email: user.email });
+
+    if (query?.redirect === 'true') {
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      return reply.redirect(`${frontendUrl}?token=${token}&userId=${user.id}`);
+    }
+
     return { 
       success: true, 
       token, 
