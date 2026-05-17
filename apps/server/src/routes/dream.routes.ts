@@ -21,14 +21,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
         required: ["content"],
         properties: {
           content: { type: "string" },
-          userId: { type: "string" }, // Fallback for testing without token
-          userStatus: {
-            type: "object",
-            properties: {
-              recentWorry: { type: "string" },
-              feeling: { type: "string" }
-            }
-          }
+          userId: { type: "string" } // Fallback for testing without token
         }
       },
       response: {
@@ -91,12 +84,15 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       }
     }
   }, async (request, reply) => {
-    const { content, userId: bodyUserId, userStatus } = request.body as any;
+    const { content, userId: bodyUserId } = request.body as any;
     const authenticatedUser = request.user as any;
     const finalUserId = authenticatedUser?.id || bodyUserId;
 
     try {
+      let activeUserStatus = undefined;
+
       if (finalUserId) {
+        // Ensure user exists
         await prisma.user.upsert({
           where: { id: finalUserId },
           update: {},
@@ -106,9 +102,20 @@ export async function dreamRoutes(fastify: FastifyInstance) {
             jewels: 50,
           }
         });
+
+        // Always load latest user status from DB to feed the AI
+        const dbStatus = await prisma.userStatus.findUnique({
+          where: { userId: finalUserId }
+        });
+        if (dbStatus) {
+          activeUserStatus = {
+            recentWorry: dbStatus.recentWorry || undefined,
+            feeling: dbStatus.feeling || undefined
+          };
+        }
       }
 
-      const result = await DreamService.interpretDream(content, userStatus);
+      const result = await DreamService.interpretDream(content, "FREE", activeUserStatus);
       
       let savedLog = null;
       if (finalUserId) {
