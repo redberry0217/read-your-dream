@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import sensible from '@fastify/sensible';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
+import fastifyOAuth2 from '@fastify/oauth2';
 import authPlugin from './plugins/auth.plugin.js';
 import { dreamRoutes } from './routes/dream.routes.js';
 import { userRoutes } from './routes/user.routes.js';
@@ -55,6 +56,48 @@ await app.register(swaggerUi, {
 await app.register(cors, { origin: '*' });
 await app.register(sensible);
 await app.register(authPlugin);
+
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
+
+// Google OAuth2
+await app.register(fastifyOAuth2, {
+  name: 'googleOAuth2',
+  credentials: {
+    client: {
+      id: process.env.GOOGLE_CLIENT_ID || '',
+      secret: process.env.GOOGLE_CLIENT_SECRET || '',
+    },
+    auth: {
+      authorizeHost: 'https://accounts.google.com',
+      authorizePath: '/o/oauth2/v2/auth',
+      tokenHost: 'https://oauth2.googleapis.com',
+      tokenPath: '/token',
+    },
+  },
+  startRedirectPath: '/api/auth/google',
+  callbackUri: `${SERVER_URL}/api/auth/google/callback`,
+  scope: ['openid', 'profile', 'email'],
+});
+
+// Kakao OAuth2
+await app.register(fastifyOAuth2, {
+  name: 'kakaoOAuth2',
+  credentials: {
+    client: {
+      id: process.env.KAKAO_CLIENT_ID || '',
+      secret: process.env.KAKAO_CLIENT_SECRET || '',
+    },
+    auth: {
+      authorizeHost: 'https://kauth.kakao.com',
+      authorizePath: '/oauth/authorize',
+      tokenHost: 'https://kauth.kakao.com',
+      tokenPath: '/oauth/token',
+    },
+  },
+  startRedirectPath: '/api/auth/kakao',
+  callbackUri: `${SERVER_URL}/api/auth/kakao/callback`,
+  scope: ['profile_nickname', 'account_email'],
+});
 
 // Shared Schemas for Swagger Models
 app.addSchema({

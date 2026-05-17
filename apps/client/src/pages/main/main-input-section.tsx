@@ -2,9 +2,25 @@ import { useState } from 'react';
 import MainBgImage from '@/assets/main.png';
 import MainTitleImage from '@/assets/mjdr_title.png';
 import { Textarea, Button } from '@/shared/ui';
+import { useInterpret } from '@/hooks/interpret/use-interpret';
 
 export function InputSection() {
   const [dream, setDream] = useState('');
+  const { mutate: interpret } = useInterpret();
+
+  const handleInterpret = () => {
+    interpret(
+      { content: dream },
+      {
+        onSuccess: (data) => {
+          console.log(data);
+        },
+        onError: (error) => {
+          console.error(error);
+        },
+      },
+    );
+  };
 
   return (
     <section
@@ -40,7 +56,12 @@ export function InputSection() {
           >
             글 지우기
           </Button>
-          <Button variant='filled' color='seokganju' disabled={!dream.trim()}>
+          <Button
+            variant='filled'
+            color='seokganju'
+            disabled={!dream.trim()}
+            onClick={handleInterpret}
+          >
             결과 보기
           </Button>
         </div>
