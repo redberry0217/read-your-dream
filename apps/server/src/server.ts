@@ -29,26 +29,26 @@ await app.register(swagger, {
     info: {
       title: '사주다로 (Dream Tarot) API',
       description: 'Dream interpretation with Gemini AI and Tarot',
-      version: '0.1.0'
+      version: '0.1.0',
     },
     components: {
       securitySchemes: {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
-      }
-    }
-  }
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+  },
 });
 
 await app.register(swaggerUi, {
   routePrefix: '/docs',
   uiConfig: {
     docExpansion: 'list',
-    deepLinking: false
-  }
+    deepLinking: false,
+  },
 });
 
 // CORS: Allow all for local network access
@@ -68,8 +68,8 @@ app.addSchema({
     jewels: { type: 'number' },
     recentWorry: { type: 'string', nullable: true },
     feeling: { type: 'string', nullable: true },
-    createdAt: { type: 'string' }
-  }
+    createdAt: { type: 'string' },
+  },
 });
 
 app.addSchema({
@@ -85,11 +85,15 @@ app.addSchema({
     tarotAnalysis: { type: 'array', nullable: true },
     summary: { type: 'string', nullable: true },
     analysis: { type: 'string', nullable: true },
-    followUpQuestions: { type: 'array', nullable: true, items: { type: 'string' } },
+    followUpQuestions: {
+      type: 'array',
+      nullable: true,
+      items: { type: 'string' },
+    },
     followUpAnswers: { type: 'object', nullable: true },
     finalReport: { type: 'string', nullable: true },
-    createdAt: { type: 'string' }
-  }
+    createdAt: { type: 'string' },
+  },
 });
 
 app.addSchema({
@@ -104,10 +108,10 @@ app.addSchema({
       properties: {
         status: { type: 'string' },
         meaning: { type: 'string' },
-        advice: { type: 'string' }
-      }
-    }
-  }
+        advice: { type: 'string' },
+      },
+    },
+  },
 });
 
 // Routes
@@ -116,10 +120,10 @@ await app.register(userRoutes, { prefix: '/api/user' });
 await app.register(authRoutes, { prefix: '/api/auth' });
 await app.register(adminRoutes, { prefix: '/api/admin' });
 
-app.get('/', async () => ({ 
+app.get('/', async () => ({
   message: 'Welcome to 사주다로 (Dream Tarot) API',
   docs: '/docs',
-  health: '/health'
+  health: '/health',
 }));
 
 app.get('/health', async (request, reply) => {
@@ -129,14 +133,18 @@ app.get('/health', async (request, reply) => {
     return { status: 'ok', db: 'healthy' };
   } catch (err: any) {
     app.log.error(err);
-    return reply.status(500).send({ status: 'error', db: 'unreachable', error: err.message });
+    return reply
+      .status(500)
+      .send({ status: 'error', db: 'unreachable', error: err.message });
   }
 });
 
 try {
   await app.listen({ port: PORT, host: HOST });
   console.log(`🚀 Server listening on http://${HOST}:${PORT}`);
-  console.log(`📄 Swagger documentation available at http://${HOST}:${PORT}/docs`);
+  console.log(
+    `📄 Swagger documentation available at http://${HOST}:${PORT}/docs`,
+  );
 } catch (err) {
   app.log.error(err);
   process.exit(1);

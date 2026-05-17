@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/use-auth';
 import { Button } from '../ui/button';
+import { useNavigate } from 'react-router-dom';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export function UserMenu() {
-  const { user, login, logout } = useAuth();
+  const { user, logout, setTokenAndUser } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!open) return;
@@ -16,11 +20,30 @@ export function UserMenu() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  const handleMockLogin = async () => {
+    const res = await fetch(`${API_BASE}/api/auth/mock-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'test@mjdr.dev', name: '테스트유저' }),
+    });
+    const data = (await res.json()) as { success: boolean; token: string };
+    if (data.success) setTokenAndUser(data.token);
+  };
+
   if (!user) {
     return (
-      <Button onClick={login} variant='filled' color='seokganju'>
-        로그인
-      </Button>
+      <div className='flex gap-2'>
+        <Button
+          variant='filled'
+          color='seokganju'
+          onClick={() => navigate('/login')}
+        >
+          로그인
+        </Button>
+        <Button variant='outline' color='seokganju' onClick={handleMockLogin}>
+          목 로그인
+        </Button>
+      </div>
     );
   }
 
@@ -38,7 +61,7 @@ export function UserMenu() {
           {user.nickname.slice(0, 1)}
         </span> */}
         <span className='text-seokganju-100'>
-          {user.nickname}, 오늘도 좋은 꿈 꾸시오
+          {user.name}, 오늘도 좋은 꿈 꾸시오
         </span>
       </Button>
 
