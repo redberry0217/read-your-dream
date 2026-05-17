@@ -10,6 +10,7 @@ import {
 type AuthContextValue = {
   user: User | null;
   token: string | null;
+  isLoggedIn: boolean;
   logout: () => void;
   setTokenAndUser: (token: string) => void;
 };
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, logout, setTokenAndUser }}>
+    <AuthContext.Provider value={{ user, token, isLoggedIn: !!user, logout, setTokenAndUser }}>
       {children}
     </AuthContext.Provider>
   );

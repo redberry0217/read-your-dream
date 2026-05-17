@@ -3,13 +3,11 @@ import { useAuth } from '@/hooks/auth/use-auth';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
 export function UserMenu() {
-  const { user, logout, setTokenAndUser } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { isLoggedIn, user, logout } = useAuth();
 
   useEffect(() => {
     if (!open) return;
@@ -20,17 +18,7 @@ export function UserMenu() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const handleMockLogin = async () => {
-    const res = await fetch(`${API_BASE}/api/auth/mock-login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@mjdr.dev', name: '테스트유저' }),
-    });
-    const data = (await res.json()) as { success: boolean; token: string };
-    if (data.success) setTokenAndUser(data.token);
-  };
-
-  if (!user) {
+  if (!isLoggedIn) {
     return (
       <div className='flex gap-2'>
         <Button
@@ -39,9 +27,6 @@ export function UserMenu() {
           onClick={() => navigate('/login')}
         >
           로그인
-        </Button>
-        <Button variant='outline' color='seokganju' onClick={handleMockLogin}>
-          목 로그인
         </Button>
       </div>
     );

@@ -1,9 +1,18 @@
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './use-auth';
+
 export type OAuthProvider = 'google' | 'kakao';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
 export function useLogin() {
-  return (provider: OAuthProvider) => {
-    window.location.href = `${API_BASE}/api/auth/${provider}`;
+  const navigate = useNavigate();
+  const { setTokenAndUser } = useAuth();
+
+  return async (provider: OAuthProvider) => {
+    const res = await fetch(`/api/auth/${provider}`);
+    if (!res.ok) throw new Error(`Login failed: ${res.status}`);
+    const data = await res.json() as { success: boolean; token: string; user: unknown };
+    setTokenAndUser(data.token);
+    navigate('/');
+    return data;
   };
 }
