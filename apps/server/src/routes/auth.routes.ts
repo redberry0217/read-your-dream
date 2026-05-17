@@ -52,15 +52,91 @@ export async function authRoutes(app: FastifyInstance) {
     return { success: true, token, user };
   });
 
-  // OAuth logic would go here (Google, Kakao)
-  // For now, we provide the structure
-  app.get('/google', async (request, reply) => {
-    // This would redirect to Google
-    return { message: 'Redirect to Google OAuth...' };
+  // Google mock social login for frontend seamless testing
+  app.get('/google', {
+    schema: {
+      description: 'Mock Google OAuth Login for frontend testing',
+      tags: ['auth'],
+      querystring: {
+        type: 'object',
+        properties: {
+          email: { type: 'string' },
+          name: { type: 'string' }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            token: { type: 'string' },
+            user: { $ref: 'User#' }
+          }
+        }
+      }
+    }
+  }, async (request) => {
+    const query = request.query as { email?: string; name?: string } | undefined;
+    const email = query?.email || 'google_mock@gmail.com';
+    const name = query?.name || '구글몽객';
+
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: { name },
+      create: {
+        email,
+        name,
+        jewels: 50,
+        provider: 'GOOGLE',
+        providerId: `google_${email.split('@')[0]}`
+      }
+    });
+
+    const token = app.jwt.sign({ id: user.id, email: user.email });
+    return { success: true, token, user };
   });
 
-  app.get('/kakao', async (request, reply) => {
-    // This would redirect to Kakao
-    return { message: 'Redirect to Kakao OAuth...' };
+  // Kakao mock social login for frontend seamless testing
+  app.get('/kakao', {
+    schema: {
+      description: 'Mock Kakao OAuth Login for frontend testing',
+      tags: ['auth'],
+      querystring: {
+        type: 'object',
+        properties: {
+          email: { type: 'string' },
+          name: { type: 'string' }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            token: { type: 'string' },
+            user: { $ref: 'User#' }
+          }
+        }
+      }
+    }
+  }, async (request) => {
+    const query = request.query as { email?: string; name?: string } | undefined;
+    const email = query?.email || 'kakao_mock@kakao.com';
+    const name = query?.name || '카카오몽객';
+
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: { name },
+      create: {
+        email,
+        name,
+        jewels: 50,
+        provider: 'KAKAO',
+        providerId: `kakao_${email.split('@')[0]}`
+      }
+    });
+
+    const token = app.jwt.sign({ id: user.id, email: user.email });
+    return { success: true, token, user };
   });
 }
