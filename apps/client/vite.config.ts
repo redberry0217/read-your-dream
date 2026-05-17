@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   server: {
+    host: true, // 동일 공유기(로컬 네트워크) 내 다른 기기 접속 허용
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
