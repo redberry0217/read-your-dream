@@ -16,15 +16,12 @@ importers:
       '@fontsource/gowun-dodum':
         specifier: ^5.2.8
         version: 5.2.8
-<<<<<<< Updated upstream
       '@mjdr/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
-=======
       '@tanstack/react-query':
         specifier: ^5.100.9
         version: 5.100.9(react@19.2.5)
->>>>>>> Stashed changes
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
