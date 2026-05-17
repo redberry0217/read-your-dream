@@ -42,6 +42,8 @@ export async function authRoutes(app: FastifyInstance) {
         email,
         name,
         jewels: 50, // Give 50 jewels for new users
+        provider: 'MOCK',
+        providerId: `mock_${email}`
       }
     });
 
