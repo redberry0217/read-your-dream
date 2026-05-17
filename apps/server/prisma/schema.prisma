@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  jewels     Int      @default(0)
+  provider   String?  // GOOGLE, KAKAO
+  providerId String?
+  status     UserStatus?
+  logs       DreamLog[]
+
+  @@unique([provider, providerId])
+}
+
+model DreamLog {
+  id        String   @id @default(cuid())
+  content   String
+  ohYok     Json?
+  chilJung  Json?
+  type      String   // "FREE" or "PREMIUM"
+  tarotCards String? // Comma separated or JSON string
+  tarotAnalysis Json?
+  summary    String?
+  analysis   String?
+  followUpQuestions Json?
+  followUpAnswers   Json?
+  finalReport       String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model UserStatus {
+  id          String @id @default(cuid())
+  recentWorry String?
+  feeling     String?
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String @unique
+}
+
+model TarotCard {
+  id              Int      @id
+  name            String   // 예: "The Tower (탑)"
+  category        String   // Major, Swords 등
+  keywords        String   // 정방향 키워드
+  keywordsRev     String   // 역방향 키워드
+  meaningUpright  String   // 정방향: 일어날 일과 현상
+  meaningReversed String   // 역방향: 지연, 내부적 갈등, 피해야 할 것
+  practicalAdvice String   // "현실적으로 이렇게 행동하라"는 조언 (핵심)
+  orientalVibe    String?
+}
