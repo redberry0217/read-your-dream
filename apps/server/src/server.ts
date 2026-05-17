@@ -3,7 +3,6 @@ import cors from '@fastify/cors';
 import sensible from '@fastify/sensible';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-import fastifyOAuth2 from '@fastify/oauth2';
 import authPlugin from './plugins/auth.plugin.js';
 import { dreamRoutes } from './routes/dream.routes.js';
 import { userRoutes } from './routes/user.routes.js';
@@ -30,74 +29,32 @@ await app.register(swagger, {
     info: {
       title: '사주다로 (Dream Tarot) API',
       description: 'Dream interpretation with Gemini AI and Tarot',
-      version: '0.1.0'
+      version: '0.1.0',
     },
     components: {
       securitySchemes: {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
-      }
-    }
-  }
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+  },
 });
 
 await app.register(swaggerUi, {
   routePrefix: '/docs',
   uiConfig: {
     docExpansion: 'list',
-    deepLinking: false
-  }
+    deepLinking: false,
+  },
 });
 
 // CORS: Allow all for local network access
 await app.register(cors, { origin: '*' });
 await app.register(sensible);
 await app.register(authPlugin);
-
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
-
-// Google OAuth2
-await app.register(fastifyOAuth2, {
-  name: 'googleOAuth2',
-  credentials: {
-    client: {
-      id: process.env.GOOGLE_CLIENT_ID || '',
-      secret: process.env.GOOGLE_CLIENT_SECRET || '',
-    },
-    auth: {
-      authorizeHost: 'https://accounts.google.com',
-      authorizePath: '/o/oauth2/v2/auth',
-      tokenHost: 'https://oauth2.googleapis.com',
-      tokenPath: '/token',
-    },
-  },
-  startRedirectPath: '/api/auth/google',
-  callbackUri: `${SERVER_URL}/api/auth/google/callback`,
-  scope: ['openid', 'profile', 'email'],
-});
-
-// Kakao OAuth2
-await app.register(fastifyOAuth2, {
-  name: 'kakaoOAuth2',
-  credentials: {
-    client: {
-      id: process.env.KAKAO_CLIENT_ID || '',
-      secret: process.env.KAKAO_CLIENT_SECRET || '',
-    },
-    auth: {
-      authorizeHost: 'https://kauth.kakao.com',
-      authorizePath: '/oauth/authorize',
-      tokenHost: 'https://kauth.kakao.com',
-      tokenPath: '/oauth/token',
-    },
-  },
-  startRedirectPath: '/api/auth/kakao',
-  callbackUri: `${SERVER_URL}/api/auth/kakao/callback`,
-  scope: ['profile_nickname', 'account_email'],
-});
 
 // Shared Schemas for Swagger Models
 app.addSchema({
@@ -111,8 +68,8 @@ app.addSchema({
     jewels: { type: 'number' },
     recentWorry: { type: 'string', nullable: true },
     feeling: { type: 'string', nullable: true },
-    createdAt: { type: 'string' }
-  }
+    createdAt: { type: 'string' },
+  },
 });
 
 app.addSchema({
@@ -128,11 +85,15 @@ app.addSchema({
     tarotAnalysis: { type: 'array', nullable: true },
     summary: { type: 'string', nullable: true },
     analysis: { type: 'string', nullable: true },
-    followUpQuestions: { type: 'array', nullable: true, items: { type: 'string' } },
+    followUpQuestions: {
+      type: 'array',
+      nullable: true,
+      items: { type: 'string' },
+    },
     followUpAnswers: { type: 'object', nullable: true },
     finalReport: { type: 'string', nullable: true },
-    createdAt: { type: 'string' }
-  }
+    createdAt: { type: 'string' },
+  },
 });
 
 app.addSchema({
@@ -147,10 +108,10 @@ app.addSchema({
       properties: {
         status: { type: 'string' },
         meaning: { type: 'string' },
-        advice: { type: 'string' }
-      }
-    }
-  }
+        advice: { type: 'string' },
+      },
+    },
+  },
 });
 
 // Routes
@@ -159,10 +120,10 @@ await app.register(userRoutes, { prefix: '/api/user' });
 await app.register(authRoutes, { prefix: '/api/auth' });
 await app.register(adminRoutes, { prefix: '/api/admin' });
 
-app.get('/', async () => ({ 
+app.get('/', async () => ({
   message: 'Welcome to 사주다로 (Dream Tarot) API',
   docs: '/docs',
-  health: '/health'
+  health: '/health',
 }));
 
 app.get('/health', async (request, reply) => {
@@ -172,14 +133,18 @@ app.get('/health', async (request, reply) => {
     return { status: 'ok', db: 'healthy' };
   } catch (err: any) {
     app.log.error(err);
-    return reply.status(500).send({ status: 'error', db: 'unreachable', error: err.message });
+    return reply
+      .status(500)
+      .send({ status: 'error', db: 'unreachable', error: err.message });
   }
 });
 
 try {
   await app.listen({ port: PORT, host: HOST });
   console.log(`🚀 Server listening on http://${HOST}:${PORT}`);
-  console.log(`📄 Swagger documentation available at http://${HOST}:${PORT}/docs`);
+  console.log(
+    `📄 Swagger documentation available at http://${HOST}:${PORT}/docs`,
+  );
 } catch (err) {
   app.log.error(err);
   process.exit(1);
