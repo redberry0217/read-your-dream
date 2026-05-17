@@ -4,7 +4,24 @@ import { prisma } from '../lib/prisma.js';
 export async function userRoutes(app: FastifyInstance) {
   // Get current user profile
   app.get('/me', {
-    preHandler: [app.authenticate]
+    preHandler: [app.authenticate],
+    schema: {
+      description: 'Get current user profile',
+      tags: ['user'],
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            email: { type: 'string' },
+            name: { type: 'string', nullable: true },
+            jewels: { type: 'number' },
+            createdAt: { type: 'string' }
+          }
+        }
+      }
+    }
   }, async (request) => {
     const userId = (request.user as any).id;
     const user = await prisma.user.findUnique({
@@ -31,6 +48,16 @@ export async function userRoutes(app: FastifyInstance) {
         required: ['amount'],
         properties: {
           amount: { type: 'number', minimum: 1 }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            jewels: { type: 'number' },
+            message: { type: 'string' }
+          }
         }
       }
     }

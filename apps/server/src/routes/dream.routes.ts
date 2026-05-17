@@ -30,6 +30,64 @@ export async function dreamRoutes(fastify: FastifyInstance) {
             }
           }
         }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: {
+              type: "object",
+              properties: {
+                summary: { type: "string" },
+                analysis: { type: "string" },
+                tarotAnalysis: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      card: { type: "string" },
+                      status: { type: "string" },
+                      meaning: { type: "string" },
+                      advice: { type: "string" }
+                    }
+                  }
+                },
+                ohYok: {
+                  type: "object",
+                  properties: {
+                    food: { type: "number" },
+                    wealth: { type: "number" },
+                    sex: { type: "number" },
+                    fame: { type: "number" },
+                    sleep: { type: "number" }
+                  }
+                },
+                chilJung: {
+                  type: "object",
+                  properties: {
+                    joy: { type: "number" },
+                    anger: { type: "number" },
+                    sorrow: { type: "number" },
+                    fear: { type: "number" },
+                    love: { type: "number" },
+                    hate: { type: "number" },
+                    desire: { type: "number" }
+                  }
+                },
+                savedLog: {
+                  type: "object",
+                  nullable: true,
+                  properties: {
+                    id: { type: "string" },
+                    content: { type: "string" },
+                    createdAt: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }, async (request, reply) => {
@@ -93,6 +151,25 @@ export async function dreamRoutes(fastify: FastifyInstance) {
         required: ["logId"],
         properties: {
           logId: { type: "string" }
+        }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                type: { type: "string" },
+                followUpQuestions: {
+                  type: "array",
+                  items: { type: "string" }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -160,6 +237,21 @@ export async function dreamRoutes(fastify: FastifyInstance) {
           logId: { type: "string" },
           answers: { type: "object", additionalProperties: true }
         }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                finalReport: { type: "string" }
+              }
+            }
+          }
+        }
       }
     }
   }, async (request, reply) => {
@@ -205,7 +297,33 @@ export async function dreamRoutes(fastify: FastifyInstance) {
     schema: {
       description: "Get authenticated user's dream logs (for Garden list)",
       tags: ["dream"],
-      security: [{ bearerAuth: [] }]
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  content: { type: "string" },
+                  type: { type: "string" },
+                  ohYok: { type: "object", nullable: true },
+                  chilJung: { type: "object", nullable: true },
+                  tarotCards: { type: "string", nullable: true },
+                  tarotAnalysis: { type: "array", nullable: true },
+                  summary: { type: "string", nullable: true },
+                  analysis: { type: "string", nullable: true },
+                  createdAt: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }, async (request, reply) => {
     const userId = (request.user as any).id;
@@ -233,6 +351,32 @@ export async function dreamRoutes(fastify: FastifyInstance) {
         required: ["logId"],
         properties: {
           logId: { type: "string" }
+        }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                content: { type: "string" },
+                type: { type: "string" },
+                ohYok: { type: "object", nullable: true },
+                chilJung: { type: "object", nullable: true },
+                tarotCards: { type: "string", nullable: true },
+                tarotAnalysis: { type: "array", nullable: true },
+                summary: { type: "string", nullable: true },
+                analysis: { type: "string", nullable: true },
+                followUpQuestions: { type: "array", nullable: true, items: { type: "string" } },
+                followUpAnswers: { type: "object", nullable: true },
+                finalReport: { type: "string", nullable: true },
+                createdAt: { type: "string" }
+              }
+            }
+          }
         }
       }
     }
@@ -265,7 +409,34 @@ export async function dreamRoutes(fastify: FastifyInstance) {
     schema: {
       description: "Get list of unique tarot cards drawn by the user",
       tags: ["dream"],
-      security: [{ bearerAuth: [] }]
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  drawnCount: { type: "number" },
+                  lastDrawnAt: { type: "string" },
+                  details: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string" },
+                      meaning: { type: "string" },
+                      advice: { type: "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }, async (request, reply) => {
     const userId = (request.user as any).id;

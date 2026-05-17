@@ -14,6 +14,24 @@ export async function authRoutes(app: FastifyInstance) {
           email: { type: 'string', format: 'email' },
           name: { type: 'string' }
         }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            token: { type: 'string' },
+            user: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                email: { type: 'string' },
+                name: { type: 'string', nullable: true },
+                jewels: { type: 'number' }
+              }
+            }
+          }
+        }
       }
     }
   }, async (request, reply) => {
