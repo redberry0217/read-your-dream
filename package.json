@@ -8,7 +8,8 @@
     "dev:client": "pnpm --filter client dev",
     "dev:server": "pnpm --filter server dev",
     "build:client": "pnpm --filter client build",
-    "build:server": "pnpm --filter server build"
+    "build:server": "pnpm --filter server build",
+    "postinstall": "pnpm --filter server exec prisma generate"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
