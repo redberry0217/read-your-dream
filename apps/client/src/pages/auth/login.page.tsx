@@ -28,10 +28,9 @@ export function LoginPage() {
       </div>
 
       {/* 로그인 카드 */}
-      <div className='w-[600px] border border-black rounded-lg p-4 bg-surface-muted flex flex-col items-center justify-center gap-4'>
+      <div className='w-[600px] border border-black rounded-lg p-10 bg-surface-muted flex flex-col items-center justify-center gap-4'>
         <img src={MjdrImage} alt='Mjdr' className='w-[100px] h-auto mt-10' />
-        <div className='h-px w-full bg-black' />
-        <span>개밤티 로그인ㅌ페이지 ㅠ</span>
+        <span className='mb-10'>몽중다로 로그인</span>
 
         {/* 에러 메시지 */}
         {errorMessage && (
@@ -40,10 +39,20 @@ export function LoginPage() {
 
         {/* 버튼 */}
         <div className='flex flex-col w-full items-center justify-center gap-2'>
-          <Button variant='filled' color='yangrok' className='w-full' onClick={() => login('google')}>
+          <Button
+            variant='filled'
+            color='yangrok'
+            className='w-full'
+            onClick={() => login('google')}
+          >
             Google로 로그인
           </Button>
-          <Button variant='filled' color='yangrok' className='w-full' onClick={() => login('kakao')}>
+          <Button
+            variant='filled'
+            color='yangrok'
+            className='w-full'
+            onClick={() => login('kakao')}
+          >
             카카오로 로그인
           </Button>
         </div>

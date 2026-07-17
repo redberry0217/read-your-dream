@@ -3,17 +3,20 @@ import MainBgImage from '@/assets/main.png';
 import MainTitleImage from '@/assets/mjdr_title.png';
 import { Textarea, Button } from '@/shared/ui';
 import { useInterpret } from '@/hooks/interpret/use-interpret';
+import { useNavigate } from 'react-router-dom';
 
 export function InputSection() {
+  const navigate = useNavigate();
   const [dream, setDream] = useState('');
-  const { mutate: interpret } = useInterpret();
 
+  const { mutate: interpret, isPending } = useInterpret();
   const handleInterpret = () => {
     interpret(
       { content: dream },
       {
         onSuccess: (data) => {
-          console.log(data);
+          console.log('해몽 결과', data);
+          navigate('/result', { state: { result: data } });
         },
         onError: (error) => {
           console.error(error);
@@ -23,7 +26,9 @@ export function InputSection() {
   };
 
   return (
-    <section
+    <>
+      {isPending && <InterpretLoading />}
+      <section
       id='input'
       className='bg-cover bg-center bg-no-repeat px-6 pb-20'
       style={{ backgroundImage: `url(${MainBgImage})` }}
@@ -51,7 +56,7 @@ export function InputSection() {
           <Button
             variant='filled'
             color='yangrok'
-            disabled={!dream.trim()}
+            disabled={!dream.trim() || isPending}
             onClick={() => setDream('')}
           >
             글 지우기
@@ -59,13 +64,24 @@ export function InputSection() {
           <Button
             variant='filled'
             color='seokganju'
-            disabled={!dream.trim()}
+            disabled={!dream.trim() || isPending}
             onClick={handleInterpret}
           >
             결과 보기
           </Button>
         </div>
       </div>
-    </section>
+      </section>
+    </>
+  );
+}
+
+function InterpretLoading() {
+  return (
+    <div className='fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-[#1a1530]/95 text-ink-light'>
+      <div className='size-12 animate-spin rounded-full border-2 border-seokganju-300 border-t-transparent' />
+      <p className='text-lg'>꿈자취를 읽는 중입니다...</p>
+      <p className='text-sm text-ink-tertiary'>역술가가 타로 세 장을 펼치고 있습니다.</p>
+    </div>
   );
 }
