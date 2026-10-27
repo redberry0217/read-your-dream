@@ -9,7 +9,9 @@
     "dev:server": "pnpm --filter server dev",
     "build:client": "pnpm --filter client build",
     "build:server": "pnpm --filter server build",
-    "postinstall": "pnpm --filter server exec prisma generate"
+    "postinstall": "pnpm --filter server exec prisma generate",
+    "render:build": "pnpm --filter server exec prisma db push && pnpm --filter server exec tsx prisma/build-tarot-db.ts && pnpm --filter server build",
+    "render:start": "pnpm --filter server start"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

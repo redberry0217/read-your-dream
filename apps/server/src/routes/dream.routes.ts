@@ -21,7 +21,17 @@ export async function dreamRoutes(fastify: FastifyInstance) {
         required: ["content"],
         properties: {
           content: { type: "string" },
-          userId: { type: "string" } // Fallback for testing without token
+          userId: { type: "string" }, // Fallback for testing without token
+          recentWorry: { type: "string" },
+          feeling: { type: "string" },
+          worryTags: { type: "array", items: { type: "string" } },
+          userStatus: {
+            type: "object",
+            properties: {
+              recentWorry: { type: "string" },
+              feeling: { type: "string" }
+            }
+          }
         }
       },
       response: {
@@ -32,6 +42,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
             data: {
               type: "object",
               properties: {
+                dreamContent: { type: "string" },
                 summary: { type: "string" },
                 analysis: { type: "string" },
                 tarotAnalysis: {
@@ -39,6 +50,7 @@ export async function dreamRoutes(fastify: FastifyInstance) {
                   items: {
                     type: "object",
                     properties: {
+                      position: { type: "string" },
                       card: { type: "string" },
                       status: { type: "string" },
                       meaning: { type: "string" },
@@ -68,6 +80,13 @@ export async function dreamRoutes(fastify: FastifyInstance) {
                     desire: { type: "number" }
                   }
                 },
+                emotionReasons: {
+                  type: "object",
+                  properties: {
+                    dominantDesire: { type: "string" },
+                    dominantEmotion: { type: "string" }
+                  }
+                },
                 savedLog: {
                   type: "object",
                   nullable: true,
@@ -84,12 +103,23 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       }
     }
   }, async (request, reply) => {
-    const { content, userId: bodyUserId } = request.body as any;
+    const { 
+      content, 
+      userId: bodyUserId, 
+      recentWorry: bodyWorry, 
+      feeling: bodyFeeling, 
+      worryTags, 
+      userStatus: bodyStatus 
+    } = request.body as any;
     const authenticatedUser = request.user as any;
     const finalUserId = authenticatedUser?.id || bodyUserId;
 
     try {
-      let activeUserStatus = undefined;
+      let activeUserStatus: { recentWorry?: string; feeling?: string } | undefined = undefined;
+
+      // 태그나 바디에서 직접 전달된 고민/감정 추출 (배열인 경우 콤마로 결합)
+      const directWorry = bodyWorry || bodyStatus?.recentWorry || (Array.isArray(worryTags) && worryTags.length > 0 ? worryTags.join(', ') : undefined);
+      const directFeeling = bodyFeeling || bodyStatus?.feeling || undefined;
 
       if (finalUserId) {
         // Ensure user exists
@@ -103,16 +133,38 @@ export async function dreamRoutes(fastify: FastifyInstance) {
           }
         });
 
-        // Always load latest user status from DB to feed the AI
+        // 사용자가 이번 요청에 태그/고민을 전달했다면 DB UserStatus에도 즉시 갱신
+        if (directWorry || directFeeling) {
+          await prisma.userStatus.upsert({
+            where: { userId: finalUserId },
+            update: {
+              ...(directWorry ? { recentWorry: directWorry } : {}),
+              ...(directFeeling ? { feeling: directFeeling } : {})
+            },
+            create: {
+              userId: finalUserId,
+              recentWorry: directWorry || null,
+              feeling: directFeeling || null
+            }
+          });
+        }
+
+        // DB에서 최신 유저 상태 로드
         const dbStatus = await prisma.userStatus.findUnique({
           where: { userId: finalUserId }
         });
         if (dbStatus) {
           activeUserStatus = {
-            recentWorry: dbStatus.recentWorry || undefined,
-            feeling: dbStatus.feeling || undefined
+            recentWorry: dbStatus.recentWorry || directWorry || undefined,
+            feeling: dbStatus.feeling || directFeeling || undefined
           };
         }
+      } else if (directWorry || directFeeling) {
+        // 비로그인 게스트도 이번 해몽에 전달된 고민/감정 태그 반영
+        activeUserStatus = {
+          recentWorry: directWorry,
+          feeling: directFeeling
+        };
       }
 
       const result = await DreamService.interpretDream(content, "FREE", activeUserStatus);
@@ -131,11 +183,25 @@ export async function dreamRoutes(fastify: FastifyInstance) {
             userId: finalUserId
           }
         });
+
+        // 꿈 기록 보상: 은자 10냥 적립
+        const loggedUser = await prisma.user.findUnique({ where: { id: finalUserId } });
+        if (loggedUser && (!loggedUser.lastRecordedAt || loggedUser.lastRecordedAt.toISOString().slice(0, 10) !== new Date().toISOString().slice(0, 10))) {
+          await prisma.user.update({
+            where: { id: finalUserId },
+            data: {
+              silver: { increment: 10 },
+              jewels: { increment: 10 },
+              lastRecordedAt: new Date()
+            }
+          });
+        }
       }
 
       return { 
         success: true, 
         data: {
+          dreamContent: content,
           ...result,
           savedLog
         } 
@@ -146,18 +212,71 @@ export async function dreamRoutes(fastify: FastifyInstance) {
     }
   });
 
-  // Step 2: Start Deep Analysis (PREMIUM - 10 Jewels)
-  fastify.post("/start-deep-analysis", {
+  // Save a dream interpretation generated while unauthenticated (Guest -> User sync)
+  fastify.post("/save-guest-log", {
     preHandler: [fastify.authenticate],
     schema: {
-      description: "Step 2: Generate follow-up questions (PREMIUM - 10 Jewels)",
+      description: "Save dream interpretation result generated while unauthenticated",
       tags: ["dream"],
       security: [{ bearerAuth: [] }],
       body: {
         type: "object",
-        required: ["logId"],
+        required: ["content"],
         properties: {
-          logId: { type: "string" }
+          content: { type: "string" },
+          summary: { type: "string", nullable: true },
+          analysis: { type: "string", nullable: true },
+          tarotAnalysis: { type: "array", nullable: true },
+          ohYok: { type: "object", nullable: true },
+          chilJung: { type: "object", nullable: true }
+        }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            data: { $ref: "DreamLog#" }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const authenticatedUserId = (request.user as any).id;
+    const body = request.body as any;
+
+    try {
+      const savedLog = await prisma.dreamLog.create({
+        data: {
+          content: body.content,
+          type: "FREE",
+          summary: body.summary || null,
+          analysis: body.analysis || null,
+          tarotAnalysis: body.tarotAnalysis || null,
+          ohYok: body.ohYok || {},
+          chilJung: body.chilJung || {},
+          userId: authenticatedUserId
+        }
+      });
+
+      return { success: true, data: savedLog };
+    } catch (error: any) {
+      fastify.log.error(error);
+      return reply.status(500 as any).send({ success: false, error: error.message });
+    }
+  });
+
+  // Step 2: Start Deep Analysis (PREMIUM - 테스트 기간 인증 및 은자 소모 생략)
+  fastify.post("/start-deep-analysis", {
+    schema: {
+      description: "Step 2: Generate follow-up questions (Testing mode: free & optional auth)",
+      tags: ["dream"],
+      body: {
+        type: "object",
+        properties: {
+          logId: { type: "string" },
+          dreamContent: { type: "string" },
+          analysis: { type: "string" }
         }
       },
       response: {
@@ -181,68 +300,72 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       }
     }
   }, async (request, reply) => {
-    const { logId } = request.body as any;
-    const authenticatedUserId = (request.user as any).id;
+    const { logId, dreamContent, analysis } = request.body as any || {};
 
     try {
-      const log = await prisma.dreamLog.findUnique({
-        where: { id: logId },
-        include: { user: true }
-      });
+      let targetContent = dreamContent || "";
+      let targetAnalysis = analysis || "";
+      let updatedLog: any = null;
 
-      if (!log) return reply.status(404 as any).send({ success: false, error: "Log not found" });
-
-      // Ownership check
-      if (log.userId !== authenticatedUserId) {
-        return reply.status(403 as any).send({ success: false, error: "This log does not belong to you" });
-      }
-
-      // Check & Deduct Jewels (10)
-      const currentUser = await prisma.user.findUnique({ where: { id: authenticatedUserId } });
-      const currentJewels = currentUser?.jewels || 0;
-
-      if (currentJewels < 10) {
-        return reply.status(403 as any).send({ 
-          success: false, 
-          error: `Insufficient jewels (10 required. Current: ${currentJewels})` 
+      let existingLog: any = null;
+      if (logId) {
+        existingLog = await prisma.dreamLog.findUnique({
+          where: { id: logId }
         });
+        if (existingLog) {
+          targetContent = targetContent || existingLog.content;
+          targetAnalysis = targetAnalysis || (existingLog.analysis || "");
+        }
       }
 
-      await prisma.user.update({
-        where: { id: authenticatedUserId },
-        data: { jewels: { decrement: 10 } }
-      });
+      // 1. AI 질문 생성 수행 (타임아웃 및 모델 에러 자동 대체)
+      const questions = await DreamService.generateFollowUpQuestions(
+        targetContent || "나의 어젯밤 꿈",
+        targetAnalysis || "무의식의 징조"
+      );
 
-      const questions = await DreamService.generateFollowUpQuestions(log.content, log.analysis || "");
+      // 2. 로그가 실제로 존재할 때만 갱신 (테스트 중 은자 차감 생략)
+      if (existingLog) {
+        try {
+          updatedLog = await prisma.dreamLog.update({
+            where: { id: logId },
+            data: {
+              type: "PREMIUM",
+              followUpQuestions: questions
+            }
+          });
+        } catch (e) {
+          console.warn("Log update skipped:", e);
+        }
+      }
 
-      const updatedLog = await prisma.dreamLog.update({
-        where: { id: logId },
+      return { 
+        success: true, 
         data: {
+          id: updatedLog?.id || logId || "test-log-id",
           type: "PREMIUM",
           followUpQuestions: questions
-        }
-      });
-
-      return { success: true, data: updatedLog };
+        } 
+      };
     } catch (error: any) {
       fastify.log.error(error);
       return reply.status(500 as any).send({ success: false, error: error.message });
     }
   });
 
-  // Step 3: Consolidate Final Analysis (FREE after Step 2)
+  // Step 3: Consolidate Final Analysis (테스트 기간 인증 생략)
   fastify.post("/consolidate", {
-    preHandler: [fastify.authenticate],
     schema: {
       description: "Step 3: Complete deep analysis with user answers",
       tags: ["dream"],
-      security: [{ bearerAuth: [] }],
       body: {
         type: "object",
-        required: ["logId", "answers"],
+        required: ["answers"],
         properties: {
           logId: { type: "string" },
-          answers: { type: "object", additionalProperties: true }
+          answers: { type: "object", additionalProperties: true },
+          dreamContent: { type: "string" },
+          tarotAnalysis: { type: "array" }
         }
       },
       response: {
@@ -262,36 +385,49 @@ export async function dreamRoutes(fastify: FastifyInstance) {
       }
     }
   }, async (request, reply) => {
-    const { logId, answers } = request.body as any;
-    const authenticatedUserId = (request.user as any).id;
+    const { logId, answers, dreamContent, tarotAnalysis } = request.body as any || {};
 
     try {
-      const log = await prisma.dreamLog.findUnique({
-        where: { id: logId }
-      });
+      let targetContent = dreamContent || "";
+      let targetTarot = tarotAnalysis || null;
 
-      if (!log) return reply.status(404 as any).send({ success: false, error: "Log not found" });
-
-      // Ownership check
-      if (log.userId !== authenticatedUserId) {
-        return reply.status(403 as any).send({ success: false, error: "This log does not belong to you" });
+      if (logId) {
+        const log = await prisma.dreamLog.findUnique({
+          where: { id: logId }
+        });
+        if (log) {
+          targetContent = targetContent || log.content;
+          targetTarot = targetTarot || log.tarotAnalysis;
+        }
       }
 
       const finalResult = await DreamService.consolidatedAnalysis(
-        log.content,
-        { tarotAnalysis: log.tarotAnalysis },
-        answers
+        targetContent || "나의 꿈",
+        { tarotAnalysis: targetTarot },
+        answers || {}
       );
 
-      const updatedLog = await prisma.dreamLog.update({
-        where: { id: logId },
+      if (logId) {
+        try {
+          await prisma.dreamLog.update({
+            where: { id: logId },
+            data: {
+              followUpAnswers: answers,
+              finalReport: finalResult.finalReport
+            }
+          });
+        } catch (e) {
+          console.warn("Log update skipped:", e);
+        }
+      }
+
+      return {
+        success: true,
         data: {
-          followUpAnswers: answers,
+          id: logId || "test-log-id",
           finalReport: finalResult.finalReport
         }
-      });
-
-      return { success: true, data: updatedLog };
+      };
     } catch (error: any) {
       fastify.log.error(error);
       return reply.status(500 as any).send({ success: false, error: error.message });

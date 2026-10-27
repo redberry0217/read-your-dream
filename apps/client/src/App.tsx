@@ -1,12 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from '@/shared/layout/Layout';
 import { GardenPage } from '@/pages/garden';
+import { ResultPage } from '@/pages/result/page';
 import { AuthProvider } from '@/hooks/auth/use-auth';
 import { MainPage } from '@/pages/main';
 import { LoginPage } from './pages/auth/login.page';
 import { AuthCallbackPage } from './pages/auth/auth-callback.page';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ResultPage } from './pages/result/page';
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -22,6 +22,7 @@ export default function App() {
               <Route index element={<MainPage />} />
               <Route path='garden' element={<GardenPage />} />
               <Route path='result' element={<ResultPage />} />
+              <Route path='result/:logId' element={<ResultPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

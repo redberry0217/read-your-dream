@@ -6,20 +6,26 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  name       String?
-  nickname   String?
-  jewels     Int      @default(0)
-  provider   String?  // GOOGLE, KAKAO
-  providerId String?
-  status     UserStatus?
-  logs       DreamLog[]
+  id             String      @id @default(cuid())
+  email          String      @unique
+  name           String?
+  nickname       String?
+  jewels         Int         @default(50) // 하위 호환용
+  silver         Int         @default(50) // 은자 (활동/출석 화폐)
+  gold           Int         @default(1)  // 금자 (프리미엄 화폐)
+  referralCode   String?     @unique      // 추천인 고유 코드
+  referredBy     String?                  // 추천해준 유저 ID
+  lastAttendance DateTime?                // 마지막 출석 일시
+  lastRecordedAt DateTime?                // 마지막 일기/기록 일시
+  provider       String?     // GOOGLE, KAKAO, MOCK
+  providerId     String?
+  status         UserStatus?
+  logs           DreamLog[]
 
   @@unique([provider, providerId])
 }
