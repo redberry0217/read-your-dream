@@ -4,14 +4,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const textareaVariants = cva(
-  'min-h-24 w-full resize-y rounded-lg border border-stroke-default bg-white px-3 py-2.5 text-sm text-ink-body transition-[border-color,box-shadow] outline-none placeholder:text-ink-light focus-visible:ring-3 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-ink-tertiary',
+  'min-h-24 w-full resize-y rounded-lg border border-stone-700 bg-stone-900/90 px-3 py-2.5 text-sm text-stone-100 transition-[border-color,box-shadow] outline-none placeholder:text-stone-400 focus-visible:ring-3 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-stone-500',
   {
     variants: {
       color: {
-        seokganju: 'focus-visible:border-seokganju-500 focus-visible:ring-seokganju-100/35',
-        guncheong: 'focus-visible:border-guncheong-500 focus-visible:ring-guncheong-100/35',
-        yangrok: 'focus-visible:border-yangrok-500 focus-visible:ring-yangrok-100/35',
-        podo: 'focus-visible:border-podo-500 focus-visible:ring-podo-100/35',
+        seokganju: 'focus-visible:border-seokganju-500 focus-visible:ring-seokganju-500/30',
+        guncheong: 'focus-visible:border-guncheong-500 focus-visible:ring-guncheong-500/30',
+        yangrok: 'focus-visible:border-yangrok-500 focus-visible:ring-yangrok-500/30',
+        podo: 'focus-visible:border-podo-500 focus-visible:ring-podo-500/30',
       },
     },
     defaultVariants: {

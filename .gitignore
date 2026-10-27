@@ -22,10 +22,15 @@ yarn-error.log*
 # Editor / OS
 .DS_Store
 .idea/
+.claude/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 *.swp
+
+# SQLite DB
+*.db
+*.db-journal
 
 # Vite
 .vite/

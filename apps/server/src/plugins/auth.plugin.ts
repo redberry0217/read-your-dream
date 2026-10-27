@@ -16,8 +16,12 @@ export default fp(async (fastify) => {
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify();
-    } catch (err) {
-      reply.send(err);
+    } catch (err: any) {
+      return reply.status(401).send({
+        success: false,
+        error: 'Unauthorized',
+        message: err.message || 'Authentication required'
+      });
     }
   });
 });

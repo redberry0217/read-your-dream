@@ -1,4 +1,5 @@
 import type { User } from '@/types/user';
+import { apiFetch } from '@/lib/api';
 import {
   createContext,
   useContext,
@@ -13,6 +14,7 @@ type AuthContextValue = {
   isLoggedIn: boolean;
   logout: () => void;
   setTokenAndUser: (token: string) => void;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -35,14 +37,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!stored) return null;
     const payload = parseJwtPayload(stored);
     if (!payload) return null;
-    return { id: payload.id, email: payload.email, name: payload.name ?? payload.email.split('@')[0], jewels: 0 };
+    return { 
+      id: payload.id, 
+      email: payload.email, 
+      name: payload.name ?? payload.email.split('@')[0], 
+      silver: 50, 
+      gold: 1, 
+      jewels: 50 
+    };
   });
+
+  const refreshUser = async () => {
+    const curToken = token || localStorage.getItem('auth_token');
+    if (!curToken) return;
+    try {
+      const data = await apiFetch<User>('/api/user/me');
+      setUser(data);
+    } catch (e) {
+      console.error('Failed to refresh user:', e);
+    }
+  };
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('auth_token', token);
+      refreshUser();
     } else {
       localStorage.removeItem('auth_token');
+      setUser(null);
     }
   }, [token]);
 
@@ -50,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const payload = parseJwtPayload(newToken);
     if (!payload) return;
     setToken(newToken);
-    setUser({ id: payload.id, email: payload.email, name: payload.name ?? payload.email.split('@')[0], jewels: 0 });
+    refreshUser();
   };
 
   const logout = () => {
@@ -59,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoggedIn: !!user, logout, setTokenAndUser }}>
+    <AuthContext.Provider value={{ user, token, isLoggedIn: !!user, logout, setTokenAndUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

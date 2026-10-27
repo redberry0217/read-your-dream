@@ -1,7 +1,13 @@
 export interface User {
   id: string;
   email: string;
-  jewels: number;
+  name?: string;
+  nickname?: string;
+  silver: number;      // 은자 (활동/출석 화폐)
+  gold: number;        // 금자 (프리미엄 화폐)
+  jewels?: number;     // 하위 호환용
+  referralCode?: string;
+  lastAttendance?: string;
 }
 
 export type DreamType = 'FREE' | 'PREMIUM';

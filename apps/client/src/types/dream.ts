@@ -3,6 +3,7 @@ export type TarotCard = {
   status: string;
   meaning: string;
   advice: string;
+  position?: string;
 };
 
 export type OhYok = {
@@ -33,12 +34,18 @@ export type DreamLog = {
 };
 
 export type InterpretResult = {
+  dreamContent?: string;
+  worryTags?: string[];
   summary: string;
   analysis: string;
   tarotAnalysis: TarotCard[];
   ohYok: OhYok;
   chilJung: ChilJung;
   savedLog: DreamLog;
+  emotionReasons?: {
+    dominantDesire?: string;
+    dominantEmotion?: string;
+  };
 };
 
 export type DeepAnalysisResult = {
@@ -54,6 +61,7 @@ export type ConsolidateResult = {
 
 export type InterpretRequest = {
   content: string;
+  worryTags?: string[];
   userStatus?: {
     recentWorry?: string;
     feeling?: string;
